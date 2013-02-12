@@ -3,9 +3,15 @@ server
 
 ## Steps to run it locally
 
+Download and install Google AppEngine SDK for your platform
+
     git clone https://github.com/omg-insa/server
 
 Clone the server repository
+
+    cd server
+    
+Enter the repository
 
     ./manage.py createsuperuser
 
