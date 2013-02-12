@@ -10,8 +10,8 @@
 
 3. Clone the server repository:
 
-    `git clone https://github.com/omg-insa/server
-    cd server`
+    `git clone https://github.com/omg-insa/server`
+    `cd server`
 
 4. Create a new super user for the first time:
 
