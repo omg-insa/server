@@ -6,6 +6,7 @@ from django.utils import simplejson
 from django.contrib.auth.models import User
 from api import models
 from api import utils
+from api import permissions
 import datetime
 import logging
 

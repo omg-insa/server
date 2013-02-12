@@ -4,6 +4,7 @@ from django.db import models
 from django.contrib.auth.models import User
 
 class DeviceInfo(models.Model):
+  """Device information model"""
   device_type = models.CharField(max_length=100)
   device_manufacture = models.CharField(max_length=100)
   device_os = models.CharField(max_length=100)
