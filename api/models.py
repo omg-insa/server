@@ -3,10 +3,25 @@ import datetime
 from django.db import models
 from django.contrib.auth.models import User
 
+class DeviceInfo(models.Model):
+  device_type = models.CharField(max_length=100)
+  device_manufacture = models.CharField(max_length=100)
+  device_os = models.CharField(max_length=100)
+  os_version = models.CharField(max_length=100)
+  device_id = models.CharField(max_length=100)
+  device_owner = models.ForeignKey(User, related_name='device_owner')
+
+
+class TokenAuthModel(models.Model):
+  """Auth token model for devices"""
+  user = models.ForeignKey(User, related_name='token_username')
+  device = models.ForeignKey(DeviceInfo, related_name='token_device_info')
+  token = models.CharField(max_length=100)
+  expiring_date = models.DateTimeField()
+
 
 class ListModel(models.Model):
   """Base model for lists."""
-
   object_type = models.CharField(max_length=100)
   objects_id = models.CharField(max_length=1000000000000)
 
@@ -77,7 +92,6 @@ class BaseModel(models.Model):
         if field.rel.to == ListModel:
           if not eval('self.%s' % field.name):
             setattr(self, field.name, ListModel())
-
 
   def can_be_edited(self, user):
     """Function that will tell us if the user can edit or no the model."""
