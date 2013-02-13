@@ -14,19 +14,19 @@ import logging
 def login(request):
   """Login request"""
   if request.method == 'POST':
-    username =  request.POST.get('username', None)
+    username = request.POST.get('username', None)
     password = request.POST.get('password', None)
-    device_type =  request.POST.get('device_type', None)
+    device_type = request.POST.get('device_type', None)
     device_manufacture = request.POST.get('device_manufacture', None)
-    device_os =  request.POST.get('device_os', None)
+    device_os = request.POST.get('device_os', None)
     os_version = request.POST.get('os_version', None)
     device_id = request.POST.get('device_id', None)
-    logging.info('Login request from user %s',username )
-    logging.info('device_type %s',device_type )
-    logging.info('device_manufacture %s',device_manufacture )
-    logging.info('device_os  %s',device_os )
-    logging.info('os_version %s',os_version )
-    logging.info('device_id %s',device_id )
+    logging.info('Login request from user %s', username)
+    logging.info('device_type %s', device_type)
+    logging.info('device_manufacture %s', device_manufacture)
+    logging.info('device_os  %s', device_os)
+    logging.info('os_version %s', os_version)
+    logging.info('device_id %s', device_id)
 
     if not username or not password or not device_id or not device_type or not device_manufacture or not device_manufacture or not device_os or not os_version:
       return HttpResponseBadRequest(simplejson.dumps({'error':'Incomplete data'}))
