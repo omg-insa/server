@@ -42,7 +42,7 @@ def login(request):
       device_info = models.DeviceInfo(device_id=device_id, device_manufacture=device_manufacture, device_os=device_os,
         device_type=device_type, os_version=os_version, device_owner=user)
       device_info.save()
-      #Generate token and save it
+     #Generate token and save it
     auth_string = utils.tokenGenerator(size=16)
     while models.TokenAuthModel.objects.filter(token=auth_string).count():
       auth_string = utils.tokenGenerator(size=16)
@@ -58,3 +58,30 @@ def login(request):
       auth_token.save()
     return HttpResponse(simplejson.dumps({'auth_token': auth_string}))
   return HttpResponseNotAllowed(['GET'])
+
+
+def register(request):
+  if request.method == 'POST':
+    username =  request.POST.get('username', None)
+    email =  request.POST.get('email', None)
+    password = request.POST.get('password', None)
+    logging.info('User %s is trying to register with email %', username, email)
+    if not email or not password or not password:
+      return HttpResponseBadRequest(simplejson.dumps({'error':"Incomplete data"}))
+    if not utils.validateEmail(email):
+      return HttpResponseBadRequest(simplejson.dumps({'error':"Invalid email"}))
+    if len(password) < 5:
+      return HttpResponseBadRequest(simplejson.dumps({'error':"Password too short"}))
+    users = User.objects.filter(email=email)
+    if users.count():
+      return HttpResponseBadRequest(simplejson.dumps({'error':"Email already used"}))
+    users = User.objects.filter(username=username)
+    if users.count():
+      return HttpResponseBadRequest(simplejson.dumps({'error':"User already registered"}))
+    new_user=User.objects.create_user(username,email,password)
+    new_user.save()
+    return HttpResponse()
+  return HttpResponseNotAllowed(['GET'])
+
+
+
