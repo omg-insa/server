@@ -30,6 +30,6 @@
 
 1. To install `python-memcache` follow this tutorial to use [easy_install](http://blog.sadphaeton.com/2009/01/20/python-development-windows-part-2-installing-easyinstallcould-be-easier.html).
 
-2. Open a command line:
+2. Then open a command line:
 
     `easy_install python-memcached`
