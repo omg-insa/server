@@ -7,4 +7,10 @@ urlpatterns = patterns('',
   (r'^register/$', 'api.views.register'),
   (r'^get_user_info/$', 'api.views.getUserInfo'),
   (r'^get_full_user_info/$', 'api.views.getFullUserInfo'),
+  (r'^update_user_info/$', 'api.views.updateUserInfo'),
+  (r'^get_secret_question/$', 'api.views.getSecretQuestion'),
+  (r'^update_secret_question/$', 'api.views.updateSecretQuestion'),
+  (r'^update_password/$', 'api.views.updatePassword'),
+  (r'^check_completion_status/$', 'api.views.checkProfileCompletion'),
+
 )

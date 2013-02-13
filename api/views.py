@@ -106,3 +106,103 @@ def getFullUserInfo(request):
     return HttpResponse(simplejson.dumps(dictToReturn))
   return HttpResponseNotAllowed(['GET'])
 
+@permissions.is_logged_in
+def updateUserInfo(request):
+  if request.method == 'POST':
+    token =  request.POST.get('auth_token', None)
+    first_name =  request.POST.get('full_name', None)
+    email =  request.POST.get('email', None)
+    birthday = request.POST.get('birthday', None)
+    sex = request.POST.get('sex', None)
+    auth_token = models.TokenAuthModel.objects.filter(token=token).get()
+    user = auth_token.user
+    users = User.objects.filter(email=email)
+    if first_name is None or email is None or birthday is None or sex is None:
+      return HttpResponseBadRequest(simplejson.dumps({'error':"Incomplete data"}))
+    if not utils.validateEmail(email):
+      return HttpResponseBadRequest(simplejson.dumps({'error':"Invalid email"}))
+    if (users.count() == 1 and users.get() != user) or users.count()>1:
+      return HttpResponseBadRequest(simplejson.dumps({'error':"Email already used"}))
+    try:
+      personalInfo = models.ExtraInfoForUser.objects.filter(user=user).get()
+    except modesl.ExtraInfoForUser.DoesNotExist:
+      personalInfo = models.ExtraInfoForUser(user=user,sex=sex, birthday=birthday)
+      personalInfo.save()
+    user.first_name = first_name
+    personalInfo.sex = sex
+    personalInfo.birthday = birthday
+    personalInfo.save()
+    user.email = email
+    user.save()
+    return HttpResponse()
+  return HttpResponseNotAllowed(['GET'])
+
+@permissions.is_logged_in
+def getSecretQuestion(request):
+  if request.method == 'POST':
+    token =  request.POST.get('auth_token', None)
+    auth_token = models.TokenAuthModel.objects.filter(token=token).get()
+    user = auth_token.user
+    try:
+      personalInfo = models.ExtraInfoForUser.objects.filter(user=user).get()
+    except models.ExtraInfoForUser.DoesNotExist:
+      personalInfo = models.ExtraInfoForUser(user=user)
+      personalInfo.save()
+    dictToReturn = {'secret_question':personalInfo.secret_question}
+    return HttpResponse(simplejson.dumps(dictToReturn))
+  return HttpResponseNotAllowed(['GET'])
+
+@permissions.is_logged_in
+def updateSecretQuestion(request):
+  if request.method == 'POST':
+    token =  request.POST.get('auth_token', None)
+    secret_question =  request.POST.get('secret_question', None)
+    secret_answer = request.POST.get('secret_answer', None)
+    password =  request.POST.get('password', None)
+    auth_token = models.TokenAuthModel.objects.filter(token=token).get()
+    user = auth_token.user
+    if secret_question is None or secret_answer is None or password is None:
+      return HttpResponseBadRequest(simplejson.dumps({'error':"Incomplete data"}))
+    if not user.check_password(password):
+      return HttpResponseBadRequest(simplejson.dumps({'error':"Wrong password"}))
+    try:
+      personalInfo = models.ExtraInfoForUser.objects.filter(user=user).get()
+    except modesl.ExtraInfoForUser.DoesNotExist:
+      personalInfo = models.ExtraInfoForUser(user=user)
+      personalInfo.save()
+    personalInfo.secret_question = secret_question
+    personalInfo.secret_answer = secret_answer
+    personalInfo.save()
+    return HttpResponse()
+  return HttpResponseNotAllowed(['GET'])
+
+@permissions.is_logged_in
+def updatePassword(request):
+  if request.method == 'POST':
+    token =  request.POST.get('auth_token', None)
+    new_password = request.POST.get('new_password', None)
+    password =  request.POST.get('password', None)
+    if password is None or new_password is None:
+      return HttpResponseBadRequest(simplejson.dumps({'error':"Incomplete data"}))
+    auth_token = models.TokenAuthModel.objects.filter(token=token).get()
+    user = auth_token.user
+    if not user.check_password(password):
+      return HttpResponseBadRequest(simplejson.dumps({'error':"Wrong password"}))
+    user.set_password(new_password)
+    user.save()
+    return HttpResponse()
+  return HttpResponseNotAllowed(['GET'])
+
+@permissions.is_logged_in
+def checkProfileCompletion(request):
+  if request.method == 'POST':
+    token =  request.POST.get('auth_token', None)
+    auth_token = models.TokenAuthModel.objects.filter(token=token).get()
+    try:
+      extra_info = models.ExtraInfoForUser.objects.filter(user=auth_token.user).get()
+    except models.ExtraInfoForUser.DoesNotExist:
+      return HttpResponseBadRequest(simplejson.dumps({'error':"No data"}))
+    if extra_info.secret_question == "" or extra_info.secret_answer == ""  or extra_info.birthday == "" or extra_info.sex == "":
+      return HttpResponseBadRequest(simplejson.dumps({'error':"No data"}))
+    return HttpResponse()
+  return HttpResponseNotAllowed(['GET'])
