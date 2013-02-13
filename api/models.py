@@ -21,6 +21,14 @@ class TokenAuthModel(models.Model):
   expiring_date = models.DateTimeField()
 
 
+class ExtraInfoForUser(models.Model):
+  user = models.ForeignKey(User, related_name='user_value')
+  birthday  = models.CharField(max_length=100)
+  sex = models.CharField(max_length=5)
+  secret_question  = models.CharField(max_length=100)
+  secret_answer  = models.CharField(max_length=100)
+
+
 class ListModel(models.Model):
   """Base model for lists."""
   object_type = models.CharField(max_length=100)

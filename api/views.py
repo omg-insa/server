@@ -59,7 +59,6 @@ def login(request):
     return HttpResponse(simplejson.dumps({'auth_token': auth_string}))
   return HttpResponseNotAllowed(['GET'])
 
-
 def register(request):
   if request.method == 'POST':
     username =  request.POST.get('username', None)
@@ -83,5 +82,27 @@ def register(request):
     return HttpResponse()
   return HttpResponseNotAllowed(['GET'])
 
+@permissions.is_logged_in
+def getUserInfo(request):
+  if request.method == 'POST':
+    token =  request.POST.get('auth_token', None)
+    auth_token = models.TokenAuthModel.objects.filter(token=token).get()
+    user = auth_token.user
+    return HttpResponse(simplejson.dumps({'email': user.email, 'full_name': user.first_name, 'username': user.username}))
+  return HttpResponseNotAllowed(['GET'])
 
+@permissions.is_logged_in
+def getFullUserInfo(request):
+  if request.method == 'POST':
+    token =  request.POST.get('auth_token', None)
+    auth_token = models.TokenAuthModel.objects.filter(token=token).get()
+    user = auth_token.user
+    try:
+      personalInfo = models.ExtraInfoForUser.objects.filter(user=user).get()
+    except models.ExtraInfoForUser.DoesNotExist:
+      personalInfo = models.ExtraInfoForUser(user=user)
+      personalInfo.save()
+    dictToReturn = {'first_name':user.first_name, 'email': user.email, 'birthday': personalInfo.birthday, 'sex': personalInfo.sex,'username': user.username}
+    return HttpResponse(simplejson.dumps(dictToReturn))
+  return HttpResponseNotAllowed(['GET'])
 
