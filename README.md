@@ -1,26 +1,26 @@
-server
-===========
+# SERVER
 
 ## Steps to run it locally
 
-Download and install Google AppEngine SDK for your platform
+1. Download and install [Google AppEngine SDK](https://www.google.com/search?q=google+appengine+sdk) for your platform.
 
-    git clone https://github.com/omg-insa/server
+2. Install `python-memcache`:
 
-Clone the server repository
+    `sudo apt-get install python-memcache`
 
-    cd server
-    
-Enter the repository
+3. Clone the server repository:
 
-    ./manage.py createsuperuser
+    `git clone https://github.com/omg-insa/server`    
+    `cd server`
 
-Create a new super user for the first time
+4. Create a new super user for the first time:
 
-    ./manage.py runserver
-    
-Run the server locally
+    `./manage.py createsuperuser`
 
-    ./manage.py deploy 
-    
-Deploy the server to appspot.com (Only for developers and owners)
+5. Run the server locally:
+
+    `./manage.py runserver`
+
+6. Deploy the server to appspot.com (Only for developers and owners)
+
+    `./manage.py deploy`
