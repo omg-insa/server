@@ -15,5 +15,6 @@ urlpatterns = patterns('',
   (r'^get_secret_question_for_recovery/$', 'api.views.getSecretQuestionForRecovery'),
   (r'^check_secret_answer/$', 'api.views.getRecoveryTempToken'),
   (r'^update_password_after_recovery/$', 'api.views.updatePasswordAfterRecovery'),
+  (r'^get_places/$', 'api.views.getPlaces'),
 
 )
