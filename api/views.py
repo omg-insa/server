@@ -211,12 +211,11 @@ def checkProfileCompletion(request):
 @permissions.is_logged_in
 def getPlaces(request)
   if request.method == 'POST':
-    types = request.POST.get('types', None)
     radius = request.POST.get('radius', None)
     latitude = request.POST.get('latitude', None)
     longitude = request.POST.get('longitude', None)
     """TODO: get from cache if possible"""
     """TODO: put things into cache"""
-    json = urllib2.urlopen('https://maps.googleapis.com/maps/api/place/search/json?location=' + latitude + ',' + longitude + '&radius=' + radius + '&types=' + types + '&name=&sensor=false&key=AIzaSyDH-hG0w9pGBjGFBcpoNb25EDaG4P11zPI').read()
+    json = urllib2.urlopen('https://maps.googleapis.com/maps/api/place/search/json?location=' + latitude + ',' + longitude + '&radius=' + radius + '&types=bar|night_club&name=&sensor=false&key=AIzaSyDH-hG0w9pGBjGFBcpoNb25EDaG4P11zPI').read()
     return HttpResponse(json)
   return HttpResponseNotAllowed(['GET'])
