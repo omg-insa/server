@@ -24,18 +24,18 @@ def login(request):
     logging.info('Login request from user %s', username)
     logging.info('device_type %s', device_type)
     logging.info('device_manufacture %s', device_manufacture)
-    logging.info('device_os  %s', device_os)
+    logging.info('device_os %s', device_os)
     logging.info('os_version %s', os_version)
     logging.info('device_id %s', device_id)
 
     if not username or not password or not device_id or not device_type or not device_manufacture or not device_manufacture or not device_os or not os_version:
-      return HttpResponseBadRequest(simplejson.dumps({'error':'Incomplete data'}))
+      return HttpResponseBadRequest(simplejson.dumps({'error': 'Incomplete data'}))
     try:
       user = User.objects.get(username=username)
       if not user.check_password(password):
-        return HttpResponseBadRequest(simplejson.dumps({'error':'Username and password not matching'}))
+        return HttpResponseBadRequest(simplejson.dumps({'error': 'Username and password not matching'}))
     except User.DoesNotExist:
-      return HttpResponseBadRequest(simplejson.dumps({'error':'Username and password not matching'}))
+      return HttpResponseBadRequest(simplejson.dumps({'error': 'Username and password not matching'}))
     try:
       device_info = models.DeviceInfo.objects.filter(device_id=device_id).get()
     except models.DeviceInfo.DoesNotExist:
@@ -61,23 +61,23 @@ def login(request):
 
 def register(request):
   if request.method == 'POST':
-    username =  request.POST.get('username', None)
-    email =  request.POST.get('email', None)
+    username = request.POST.get('username', None)
+    email = request.POST.get('email', None)
     password = request.POST.get('password', None)
     logging.info('User %s is trying to register with email %', username, email)
-    if not email or not password or not password:
-      return HttpResponseBadRequest(simplejson.dumps({'error':"Incomplete data"}))
+    if not email or not password:
+      return HttpResponseBadRequest(simplejson.dumps({'error': 'Incomplete data'}))
     if not utils.validateEmail(email):
-      return HttpResponseBadRequest(simplejson.dumps({'error':"Invalid email"}))
-    if len(password) < 5:
-      return HttpResponseBadRequest(simplejson.dumps({'error':"Password too short"}))
+      return HttpResponseBadRequest(simplejson.dumps({'error': 'Invalid email'}))
+    if len(password) < 4:
+      return HttpResponseBadRequest(simplejson.dumps({'error': 'Password too short'}))
     users = User.objects.filter(email=email)
     if users.count():
-      return HttpResponseBadRequest(simplejson.dumps({'error':"Email already used"}))
+      return HttpResponseBadRequest(simplejson.dumps({'error': 'Email already used'}))
     users = User.objects.filter(username=username)
     if users.count():
-      return HttpResponseBadRequest(simplejson.dumps({'error':"User already registered"}))
-    new_user=User.objects.create_user(username,email,password)
+      return HttpResponseBadRequest(simplejson.dumps({'error': 'User already registered'}))
+    new_user=User.objects.create_user(username, email, password)
     new_user.save()
     return HttpResponse()
   return HttpResponseNotAllowed(['GET'])
@@ -85,7 +85,7 @@ def register(request):
 @permissions.is_logged_in
 def getUserInfo(request):
   if request.method == 'POST':
-    token =  request.POST.get('auth_token', None)
+    token = request.POST.get('auth_token', None)
     auth_token = models.TokenAuthModel.objects.filter(token=token).get()
     user = auth_token.user
     return HttpResponse(simplejson.dumps({'email': user.email, 'full_name': user.first_name, 'username': user.username}))
@@ -94,7 +94,7 @@ def getUserInfo(request):
 @permissions.is_logged_in
 def getFullUserInfo(request):
   if request.method == 'POST':
-    token =  request.POST.get('auth_token', None)
+    token = request.POST.get('auth_token', None)
     auth_token = models.TokenAuthModel.objects.filter(token=token).get()
     user = auth_token.user
     try:
@@ -102,27 +102,27 @@ def getFullUserInfo(request):
     except models.ExtraInfoForUser.DoesNotExist:
       personalInfo = models.ExtraInfoForUser(user=user)
       personalInfo.save()
-    dictToReturn = {'first_name':user.first_name, 'email': user.email, 'birthday': personalInfo.birthday, 'sex': personalInfo.sex,'username': user.username}
+    dictToReturn = {'first_name': user.first_name, 'email': user.email, 'birthday': personalInfo.birthday, 'sex': personalInfo.sex,'username': user.username}
     return HttpResponse(simplejson.dumps(dictToReturn))
   return HttpResponseNotAllowed(['GET'])
 
 @permissions.is_logged_in
 def updateUserInfo(request):
   if request.method == 'POST':
-    token =  request.POST.get('auth_token', None)
-    first_name =  request.POST.get('full_name', None)
-    email =  request.POST.get('email', None)
+    token = request.POST.get('auth_token', None)
+    first_name = request.POST.get('full_name', None)
+    email = request.POST.get('email', None)
     birthday = request.POST.get('birthday', None)
     sex = request.POST.get('sex', None)
     auth_token = models.TokenAuthModel.objects.filter(token=token).get()
     user = auth_token.user
     users = User.objects.filter(email=email)
     if first_name is None or email is None or birthday is None or sex is None:
-      return HttpResponseBadRequest(simplejson.dumps({'error':"Incomplete data"}))
+      return HttpResponseBadRequest(simplejson.dumps({'error': 'Incomplete data'}))
     if not utils.validateEmail(email):
-      return HttpResponseBadRequest(simplejson.dumps({'error':"Invalid email"}))
+      return HttpResponseBadRequest(simplejson.dumps({'error': 'Invalid email'}))
     if (users.count() == 1 and users.get() != user) or users.count()>1:
-      return HttpResponseBadRequest(simplejson.dumps({'error':"Email already used"}))
+      return HttpResponseBadRequest(simplejson.dumps({'error': 'Email already used'}))
     try:
       personalInfo = models.ExtraInfoForUser.objects.filter(user=user).get()
     except modesl.ExtraInfoForUser.DoesNotExist:
@@ -140,7 +140,7 @@ def updateUserInfo(request):
 @permissions.is_logged_in
 def getSecretQuestion(request):
   if request.method == 'POST':
-    token =  request.POST.get('auth_token', None)
+    token = request.POST.get('auth_token', None)
     auth_token = models.TokenAuthModel.objects.filter(token=token).get()
     user = auth_token.user
     try:
@@ -148,23 +148,23 @@ def getSecretQuestion(request):
     except models.ExtraInfoForUser.DoesNotExist:
       personalInfo = models.ExtraInfoForUser(user=user)
       personalInfo.save()
-    dictToReturn = {'secret_question':personalInfo.secret_question}
+    dictToReturn = {'secret_question': personalInfo.secret_question}
     return HttpResponse(simplejson.dumps(dictToReturn))
   return HttpResponseNotAllowed(['GET'])
 
 @permissions.is_logged_in
 def updateSecretQuestion(request):
   if request.method == 'POST':
-    token =  request.POST.get('auth_token', None)
-    secret_question =  request.POST.get('secret_question', None)
+    token = request.POST.get('auth_token', None)
+    secret_question = request.POST.get('secret_question', None)
     secret_answer = request.POST.get('secret_answer', None)
-    password =  request.POST.get('password', None)
+    password = request.POST.get('password', None)
     auth_token = models.TokenAuthModel.objects.filter(token=token).get()
     user = auth_token.user
     if secret_question is None or secret_answer is None or password is None:
-      return HttpResponseBadRequest(simplejson.dumps({'error':"Incomplete data"}))
+      return HttpResponseBadRequest(simplejson.dumps({'error': 'Incomplete data'}))
     if not user.check_password(password):
-      return HttpResponseBadRequest(simplejson.dumps({'error':"Wrong password"}))
+      return HttpResponseBadRequest(simplejson.dumps({'error': 'Wrong password'}))
     try:
       personalInfo = models.ExtraInfoForUser.objects.filter(user=user).get()
     except modesl.ExtraInfoForUser.DoesNotExist:
@@ -179,15 +179,15 @@ def updateSecretQuestion(request):
 @permissions.is_logged_in
 def updatePassword(request):
   if request.method == 'POST':
-    token =  request.POST.get('auth_token', None)
+    token = request.POST.get('auth_token', None)
     new_password = request.POST.get('new_password', None)
-    password =  request.POST.get('password', None)
+    password = request.POST.get('password', None)
     if password is None or new_password is None:
-      return HttpResponseBadRequest(simplejson.dumps({'error':"Incomplete data"}))
+      return HttpResponseBadRequest(simplejson.dumps({'error': 'Incomplete data'}))
     auth_token = models.TokenAuthModel.objects.filter(token=token).get()
     user = auth_token.user
     if not user.check_password(password):
-      return HttpResponseBadRequest(simplejson.dumps({'error':"Wrong password"}))
+      return HttpResponseBadRequest(simplejson.dumps({'error': 'Wrong password'}))
     user.set_password(new_password)
     user.save()
     return HttpResponse()
@@ -196,13 +196,13 @@ def updatePassword(request):
 @permissions.is_logged_in
 def checkProfileCompletion(request):
   if request.method == 'POST':
-    token =  request.POST.get('auth_token', None)
+    token = request.POST.get('auth_token', None)
     auth_token = models.TokenAuthModel.objects.filter(token=token).get()
     try:
       extra_info = models.ExtraInfoForUser.objects.filter(user=auth_token.user).get()
     except models.ExtraInfoForUser.DoesNotExist:
-      return HttpResponseBadRequest(simplejson.dumps({'error':"No data"}))
-    if extra_info.secret_question == "" or extra_info.secret_answer == ""  or extra_info.birthday == "" or extra_info.sex == "":
-      return HttpResponseBadRequest(simplejson.dumps({'error':"No data"}))
+      return HttpResponseBadRequest(simplejson.dumps({'error': 'No data'}))
+    if extra_info.secret_question == '' or extra_info.secret_answer == ''  or extra_info.birthday == '' or extra_info.sex == '':
+      return HttpResponseBadRequest(simplejson.dumps({'error': 'No data'}))
     return HttpResponse()
   return HttpResponseNotAllowed(['GET'])
