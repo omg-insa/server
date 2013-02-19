@@ -1,7 +1,7 @@
 # Create your views here.
 
 from django.http import HttpResponse
-from django.http import HttpResponseNotAllowed,HttpResponseBadRequest,HttpResponseForbidden
+from django.http import HttpResponseNotAllowed, HttpResponseBadRequest, HttpResponseForbidden
 from django.utils import simplejson
 from django.contrib.auth.models import User
 from api import models
@@ -30,7 +30,7 @@ def login(request):
     logging.info('device_id %s', device_id)
 
     if not username or not password or not device_id or not device_type  or not device_os or not os_version:
-      return HttpResponseBadRequest(simplejson.dumps({'error':'Incomplete data'}))
+      return HttpResponseBadRequest(simplejson.dumps({'error': 'Incomplete data'}))
     try:
       user = User.objects.get(username=username)
       if not user.check_password(password):
@@ -106,13 +106,12 @@ def getFullUserInfo(request):
     except models.ExtraInfoForUser.DoesNotExist:
       personalInfo = models.ExtraInfoForUser(user=user)
       personalInfo.save()
-    dictToReturn = {'first_name': user.first_name, 'email': user.email, 'birthday': personalInfo.birthday, 'sex': personalInfo.sex,'username': user.username}
+    dictToReturn = {'first_name': user.first_name, 'email': user.email, 'birthday': personalInfo.birthday, 'sex': personalInfo.sex, 'username': user.username}
     return HttpResponse(simplejson.dumps(dictToReturn))
   return HttpResponseNotAllowed(['GET'])
 
 @permissions.is_logged_in
 def updateUserInfo(request):
-
   if request.method == 'POST':
     token = request.POST.get('auth_token', None)
     first_name = request.POST.get('full_name', None)
@@ -131,7 +130,7 @@ def updateUserInfo(request):
     try:
       personalInfo = models.ExtraInfoForUser.objects.filter(user=user).get()
     except modesl.ExtraInfoForUser.DoesNotExist:
-      personalInfo = models.ExtraInfoForUser(user=user,sex=sex, birthday=birthday)
+      personalInfo = models.ExtraInfoForUser(user=user, sex=sex, birthday=birthday)
       personalInfo.save()
     user.first_name = first_name
     personalInfo.sex = sex
@@ -217,18 +216,18 @@ def getSecretQuestionForRecovery(request):
   if request.method == 'POST':
     username =  request.POST.get('username', None)
     if username is None:
-      return HttpResponseBadRequest(simplejson.dumps({'error':"Incomplete data"}))
+      return HttpResponseBadRequest(simplejson.dumps({'error': 'Incomplete data'}))
     try:
       user = User.objects.filter(username=username).get()
     except User.DoesNotExist:
-      return HttpResponseBadRequest(simplejson.dumps({'error':"User does not exists"}))
+      return HttpResponseBadRequest(simplejson.dumps({'error': 'User does not exists'}))
     try:
       user_extra = models.ExtraInfoForUser.objects.filter(user=user).get()
     except models.ExtraInfoForUser.DoesNotExist:
-      return HttpResponseBadRequest(simplejson.dumps({'error':"User does not have security questions"}))
-    if user_extra.secret_answer == "" or user_extra.secret_question == "" or user_extra.birthday == "":
-      return HttpResponseBadRequest(simplejson.dumps({'error':"User does not have security questions"}))
-    return HttpResponse(simplejson.dumps({'secret_question':user_extra.secret_question}))
+      return HttpResponseBadRequest(simplejson.dumps({'error': 'User does not have security questions'}))
+    if user_extra.secret_answer == '' or user_extra.secret_question == '' or user_extra.birthday == '':
+      return HttpResponseBadRequest(simplejson.dumps({'error': 'User does not have security questions'}))
+    return HttpResponse(simplejson.dumps({'secret_question': user_extra.secret_question}))
   return HttpResponseNotAllowed(['GET'])
 
 
@@ -238,23 +237,23 @@ def getRecoveryTempToken(request):
     answer =  request.POST.get('answer', None)
     birthday =  request.POST.get('birthday', None)
     if username is None or  answer is None or birthday is None:
-      return HttpResponseBadRequest(simplejson.dumps({'error':"Incomplete data"}))
+      return HttpResponseBadRequest(simplejson.dumps({'error': 'Incomplete data'}))
     try:
       user = User.objects.filter(username=username).get()
     except User.DoesNotExist:
-      return HttpResponseBadRequest(simplejson.dumps({'error':"User dose not exists"}))
+      return HttpResponseBadRequest(simplejson.dumps({'error': 'User dose not exists'}))
     try:
       user_extra = models.ExtraInfoForUser.objects.filter(user=user).get()
     except models.ExtraInfoForUser.DoesNotExist:
-      return HttpResponseBadRequest(simplejson.dumps({'error':"User dose not have security questions"}))
-    if user_extra.secret_answer == "" or user_extra.secret_question == "" or user_extra.birthday == "":
-      return HttpResponseBadRequest(simplejson.dumps({'error':"User dose not have security questions"}))
+      return HttpResponseBadRequest(simplejson.dumps({'error': 'User dose not have security questions'}))
+    if user_extra.secret_answer == '' or user_extra.secret_question == '' or user_extra.birthday == '':
+      return HttpResponseBadRequest(simplejson.dumps({'error': 'User dose not have security questions'}))
     if user_extra.secret_answer != answer or user_extra.birthday != birthday:
-      return HttpResponseBadRequest(simplejson.dumps({'error':"Wrong answer"}))
+      return HttpResponseBadRequest(simplejson.dumps({'error': 'Wrong answer'}))
     tmp_token = utils.tokenGenerator(size=10)
-    revoery_model = models.RecoveryTokens(token=tmp_token, user=user,expiringDate = datetime.datetime.now() + datetime.timedelta(seconds=30))
+    revoery_model = models.RecoveryTokens(token=tmp_token, user=user, expiringDate = datetime.datetime.now() + datetime.timedelta(seconds=30))
     revoery_model.save()
-    return HttpResponse(simplejson.dumps({'tmp_token':tmp_token}))
+    return HttpResponse(simplejson.dumps({'tmp_token': tmp_token}))
   return HttpResponseNotAllowed(['GET'])
 
 
@@ -264,15 +263,15 @@ def updatePasswordAfterRecovery(request):
     new_password = request.POST.get('new_password', None)
     username =  request.POST.get('user', None)
     if token is None or new_password is None or username is None:
-      return HttpResponseBadRequest(simplejson.dumps({'error':"Incomplete data"}))
+      return HttpResponseBadRequest(simplejson.dumps({'error': 'Incomplete data'}))
     try:
       user =  User.objects.filter(username=username).get()
-      tmp_auth = models.RecoveryTokens.objects.filter(token=token,user=user).get()
+      tmp_auth = models.RecoveryTokens.objects.filter(token=token, user=user).get()
       if tmp_auth:
         user.set_password(new_password)
         user.save()
-    except (models.RecoveryTokens.DoesNotExist,User.DoesNotExist):
-      return HttpResponseBadRequest(simplejson.dumps({'error':"Wrong data"}))
+    except (models.RecoveryTokens.DoesNotExist, User.DoesNotExist):
+      return HttpResponseBadRequest(simplejson.dumps({'error': 'Wrong data'}))
     return HttpResponse()
 
 @permissions.is_logged_in
@@ -283,6 +282,6 @@ def getPlaces(request):
     longitude = request.POST.get('longitude', None)
     """TODO: get from cache if possible"""
     """TODO: put things into cache"""
-    json = urllib2.urlopen('https://maps.googleapis.com/maps/api/place/search/json?location=' + latitude + ',' + longitude + '&radius=' + radius + '&types=bar|night_club&name=&sensor=false&key=AIzaSyDH-hG0w9pGBjGFBcpoNb25EDaG4P11zPI').read()
+    json = urllib2.urlopen('https: //maps.googleapis.com/maps/api/place/search/json?location=' + latitude + ',' + longitude + '&radius=' + radius + '&types=bar|night_club&name=&sensor=false&key=AIzaSyDH-hG0w9pGBjGFBcpoNb25EDaG4P11zPI').read()
     return HttpResponse(json)
   return HttpResponseNotAllowed(['GET'])
