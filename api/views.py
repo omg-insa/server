@@ -83,7 +83,7 @@ def register(request):
       return HttpResponseBadRequest(simplejson.dumps({'error': 'User already registered'}))
     new_user=User.objects.create_user(username, email, password)
     new_user.save()
-    return HttpResponse()
+    return HttpResponse(simplejson.dumps({'empty':'empty'}))
   return HttpResponseNotAllowed(['GET'])
 
 @permissions.is_logged_in
@@ -138,7 +138,7 @@ def updateUserInfo(request):
     personalInfo.save()
     user.email = email
     user.save()
-    return HttpResponse()
+    return HttpResponse(simplejson.dumps({'empty':'empty'})) 
   return HttpResponseNotAllowed(['GET'])
 
 @permissions.is_logged_in
@@ -177,7 +177,7 @@ def updateSecretQuestion(request):
     personalInfo.secret_question = secret_question
     personalInfo.secret_answer = secret_answer
     personalInfo.save()
-    return HttpResponse()
+    return HttpResponse(simplejson.dumps({'empty':'empty'})) 
   return HttpResponseNotAllowed(['GET'])
 
 @permissions.is_logged_in
@@ -194,7 +194,7 @@ def updatePassword(request):
       return HttpResponseBadRequest(simplejson.dumps({'error': 'Wrong password'}))
     user.set_password(new_password)
     user.save()
-    return HttpResponse()
+    return HttpResponse(simplejson.dumps({'empty':'empty'})) 
   return HttpResponseNotAllowed(['GET'])
 
 @permissions.is_logged_in
@@ -208,7 +208,7 @@ def checkProfileCompletion(request):
       return HttpResponseBadRequest(simplejson.dumps({'error': 'No data'}))
     if extra_info.secret_question == '' or extra_info.secret_answer == ''  or extra_info.birthday == '' or extra_info.sex == '':
       return HttpResponseBadRequest(simplejson.dumps({'error': 'No data'}))
-    return HttpResponse()
+    return HttpResponse(simplejson.dumps({'empty':'empty'})) 
   return HttpResponseNotAllowed(['GET'])
 
 
@@ -272,7 +272,7 @@ def updatePasswordAfterRecovery(request):
         user.save()
     except (models.RecoveryTokens.DoesNotExist, User.DoesNotExist):
       return HttpResponseBadRequest(simplejson.dumps({'error': 'Wrong data'}))
-    return HttpResponse()
+    return HttpResponse(simplejson.dumps({'empty':'empty'})) 
 
 @permissions.is_logged_in
 def getPlaces(request):
