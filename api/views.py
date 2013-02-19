@@ -152,7 +152,7 @@ def getSecretQuestion(request):
     except models.ExtraInfoForUser.DoesNotExist:
       personalInfo = models.ExtraInfoForUser(user=user)
       personalInfo.save()
-    dictToReturn = {'secret_question': personalInfo.secret_question}
+    dictToReturn = {'secret_question': personalInfo.secret_question, 'secret_answer': personalInfo.secret_answer}
     return HttpResponse(simplejson.dumps(dictToReturn))
   return HttpResponseNotAllowed(['GET'])
 
@@ -163,6 +163,7 @@ def updateSecretQuestion(request):
     secret_question = request.POST.get('secret_question', None)
     secret_answer = request.POST.get('secret_answer', None)
     password = request.POST.get('password', None)
+    logging.error("%s", request.POST)
     auth_token = models.TokenAuthModel.objects.filter(token=token).get()
     user = auth_token.user
     if secret_question is None or secret_answer is None or password is None:
