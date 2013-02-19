@@ -68,7 +68,7 @@ def register(request):
     username = request.POST.get('username', None)
     email = request.POST.get('email', None)
     password = request.POST.get('password', None)
-    logging.info('User %s is trying to register with email %', username, email)
+    logging.info('User %s is trying to register with email %s', username, email)
     if not email or not password:
       return HttpResponseBadRequest(simplejson.dumps({'error': 'Incomplete data'}))
     if not utils.validateEmail(email):
