@@ -54,7 +54,7 @@ def login(request):
       auth_token.token = auth_string
       auth_token.user = user
       device_info.device_owner = user
-      device_id.save()
+      device_info.save()
       auth_token.save()
     except models.TokenAuthModel.DoesNotExist:
       auth_token = models.TokenAuthModel(user=user, device=device_info, token=auth_string,
