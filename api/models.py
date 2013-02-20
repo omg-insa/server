@@ -31,6 +31,7 @@ class ExtraInfoForUser(models.Model):
   sex = models.CharField(max_length=5)
   secret_question  = models.CharField(max_length=100)
   secret_answer  = models.CharField(max_length=100)
+  status = models.CharField(max_length=100)
 
 
 class Location(models.Model):

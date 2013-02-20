@@ -106,7 +106,7 @@ def getFullUserInfo(request):
     except models.ExtraInfoForUser.DoesNotExist:
       personalInfo = models.ExtraInfoForUser(user=user)
       personalInfo.save()
-    dictToReturn = {'first_name': user.first_name, 'email': user.email, 'birthday': personalInfo.birthday, 'sex': personalInfo.sex, 'username': user.username}
+    dictToReturn = {'first_name': user.first_name, 'email': user.email, 'birthday': personalInfo.birthday, 'sex': personalInfo.sex, 'status':personalInfo.status ,'username': user.username}
     return HttpResponse(simplejson.dumps(dictToReturn))
   return HttpResponseNotAllowed(['GET'])
 
@@ -118,10 +118,11 @@ def updateUserInfo(request):
     email = request.POST.get('email', None)
     birthday = request.POST.get('birthday', None)
     sex = request.POST.get('sex', None)
+    status = request.POST.get('status',None)
     auth_token = models.TokenAuthModel.objects.filter(token=token).get()
     user = auth_token.user
     users = User.objects.filter(email=email)
-    if first_name is None or email is None or birthday is None or sex is None:
+    if first_name is None or email is None or birthday is None or sex is None or status is None:
       return HttpResponseBadRequest(simplejson.dumps({'error': 'Incomplete data'}))
     if not utils.validateEmail(email):
       return HttpResponseBadRequest(simplejson.dumps({'error': 'Invalid email'}))
@@ -130,9 +131,10 @@ def updateUserInfo(request):
     try:
       personalInfo = models.ExtraInfoForUser.objects.filter(user=user).get()
     except modesl.ExtraInfoForUser.DoesNotExist:
-      personalInfo = models.ExtraInfoForUser(user=user, sex=sex, birthday=birthday)
+      personalInfo = models.ExtraInfoForUser(user=user, sex=sex, birthday=birthday,status=status)
       personalInfo.save()
     user.first_name = first_name
+    personalInfo.status = status
     personalInfo.sex = sex
     personalInfo.birthday = birthday
     personalInfo.save()
