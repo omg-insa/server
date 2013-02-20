@@ -106,7 +106,7 @@ def getFullUserInfo(request):
     except models.ExtraInfoForUser.DoesNotExist:
       personalInfo = models.ExtraInfoForUser(user=user)
       personalInfo.save()
-    dictToReturn = {'first_name': user.first_name, 'email': user.email, 'birthday': personalInfo.birthday, 'sex': personalInfo.sex, 'status':personalInfo.status ,'username': user.username}
+    dictToReturn = {'full_name': user.first_name, 'email': user.email, 'birthday': personalInfo.birthday, 'sex': personalInfo.sex, 'status':personalInfo.status ,'username': user.username}
     return HttpResponse(simplejson.dumps(dictToReturn))
   return HttpResponseNotAllowed(['GET'])
 
