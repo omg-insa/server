@@ -1,0 +1,30 @@
+<!doctype html>
+<meta charset="utf-8">
+<title> test </title>
+
+<style>
+  iframe { border: 0px }
+</style>
+
+<form method=post target=target>
+  <select name=api>
+    <option selected>get_places</option>
+  </select>
+  <br> <input type=text name=radius title=radius placeholder=radius>
+  <br> <input type=text name=latitude title=latitude placeholder=latitude>
+  <br> <input type=text name=longitude title=latitude placeholder=longitude>
+  <br> <input type=button value=开始 onclick=submot()>
+</form>
+
+<iframe id=target></iframe>
+
+<script>
+  var action = 'http://planyourpty.appspot.com/api/', // http://127.0.0.1:8000/api/
+      form = document.forms[0],
+      pre = document.getElementsByTagName('pre')[0];
+
+  function submot() {
+    form.action = action + form.api.value + '/';
+    form.submit();
+  }
+</script>
