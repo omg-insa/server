@@ -277,7 +277,7 @@ def updatePasswordAfterRecovery(request):
       return HttpResponseBadRequest(simplejson.dumps({'error': 'Wrong data'}))
     return HttpResponse(simplejson.dumps({'empty':'empty'})) 
 
-"""@permissions.is_logged_in"""
+#@permissions.is_logged_in
 def getPlaces(request):
   if request.method == 'POST':
     radius = request.POST.get('radius', None)
