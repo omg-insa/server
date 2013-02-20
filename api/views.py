@@ -290,3 +290,15 @@ def getPlaces(request):
     json = response.read()
     return HttpResponse(json)
   return HttpResponseNotAllowed(['GET'])
+
+def getIntrestsList(request):
+  intrests = models.Intrests.objects.all()
+  toReturn = []
+  for i in intrests:
+    toReturn.append({'name': i.name, 'description':i.description})
+  return HttpResponse(simplejson.dumps(toReturn))
+
+
+def addIntrest(request):
+  models.Intrests(name=request.GET.get('name',""),description=request.GET.get('description',"")).save()
+  return HttpResponse(simplejson.dumps({'empty':'empty'}))

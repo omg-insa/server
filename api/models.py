@@ -12,6 +12,11 @@ class DeviceInfo(models.Model):
   device_id = models.CharField(max_length=100)
   device_owner = models.ForeignKey(User, related_name='device_owner')
 
+class Intrests(models.Model):
+  name =  models.CharField(max_length=100)
+  description =  models.CharField(max_length=100)
+
+
 class RecoveryTokens(models.Model):
   token  = models.CharField(max_length=100)
   user =  models.ForeignKey(User, related_name='for_who_must_recover')
