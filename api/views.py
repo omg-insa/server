@@ -291,13 +291,43 @@ def getPlaces(request):
     return HttpResponse(json)
   return HttpResponseNotAllowed(['GET'])
 
+@permissions.is_logged_in
 def getIntrestsList(request):
-  intrests = models.Intrests.objects.all()
-  toReturn = []
-  for i in intrests:
-    toReturn.append({'name': i.name, 'description':i.description})
-  return HttpResponse(simplejson.dumps(toReturn))
+  if request.method == 'POST':
+    token = request.POST.get('auth_token', None)
+    auth_token = models.TokenAuthModel.objects.filter(token=token).get()
+    user = auth_token.user
+    intrests = models.Intrests.objects.all()
+    toReturn = []
+    for i in intrests:
+      isSelected = False
+      if models.UserIntrest.objects.filter(user=user, intrest=i).count():
+        isSelected = True
+      toReturn.append({'name': i.name, 'description':i.description, 'selected': isSelected, 'id':i.id})
+    return HttpResponse(simplejson.dumps({'list':toReturn}))
+  return HttpResponseNotAllowed(['GET'])
 
+@permissions.is_logged_in
+def updateUserIntrest(request):
+  if request.method == 'POST':
+    token = request.POST.get('auth_token', None)
+    intrest = request.POST.get('intrest',None)
+    if intrest is None:
+      return HttpResponseBadRequest(simplejson.dumps({'error': 'Incomplete data'}))
+    auth_token = models.TokenAuthModel.objects.filter(token=token).get()
+    user = auth_token.user
+    try:
+      intrest_model = models.Intrests.objects.filter(id=intrest).get()
+    except models.Intrests.DoesNotExist:
+      return HttpResponseBadRequest(simplejson.dumps({'error': 'Intrest dose not exist'}))
+    try:
+      user_intrest = models.UserIntrest.objects.filter(user=user, intrest=intrest_model).get()
+      user_intrest.delete()
+    except models.UserIntrest.DoesNotExist:
+      user_intrest = models.UserIntrest(user=user,intrest=intrest_model)
+      user_intrest.save()
+    return HttpResponse(simplejson.dumps({'empty':'empty'}))
+  return HttpResponseNotAllowed(['GET'])
 
 def addIntrest(request):
   models.Intrests(name=request.GET.get('name',""),description=request.GET.get('description',"")).save()

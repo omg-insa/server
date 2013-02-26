@@ -16,6 +16,9 @@ class Intrests(models.Model):
   name =  models.CharField(max_length=100)
   description =  models.CharField(max_length=100)
 
+class UserIntrest(models.Model):
+  intrest = models.ForeignKey(Intrests, related_name='user_intrest')
+  user = models.ForeignKey(User, related_name='user_for_intresst')
 
 class RecoveryTokens(models.Model):
   token  = models.CharField(max_length=100)
