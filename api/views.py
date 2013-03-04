@@ -343,3 +343,48 @@ def updateUserIntrest(request):
 def addIntrest(request):
   models.Intrests(name=request.GET.get('name',""),description=request.GET.get('description',"")).save()
   return HttpResponse(simplejson.dumps({'empty':'empty'}))
+
+@permissions.is_logged_in
+def addEvent(request):
+  """TODO"""
+  token = request.POST.get('auth_token', None)
+  auth_token = models.TokenAuthModel.objects.filter(token=token).get()
+  user = auth_token.user
+  models.Event(name=request.GET.get('name',""),start_time = datetime.datetime.now(),creator_id=user, end_time = datetime.datetime.now()).save()
+  return HttpResponse(simplejson.dumps({'empty':'empty'}))
+
+@permissions.is_logged_in
+def addChatRoomMessage(request):
+  if request.method == 'POST':
+    token = request.POST.get('auth_token', None)
+    message = request.POST.get('message',None)
+    event = request.POST.get('event_id',None)
+    if message is None or event is None:
+      return HttpResponseBadRequest(simplejson.dumps({'error': 'Incomplete data'}))
+    auth_token = models.TokenAuthModel.objects.filter(token=token).get()
+    try:
+      event_models = models.Event.objects.filter(id=event).get()
+    except models.Event.DoesNotExist:
+      return HttpResponseBadRequest(simplejson.dumps({'error': 'Event dose not exist'}))
+    user = auth_token.user
+    message_model = models.EventChatRoom(user=user,message=message,event=event_models,date = datetime.datetime.now())
+    message_model.save()
+    return HttpResponse(simplejson.dumps({'empty':'empty'}))
+  return HttpResponseNotAllowed(['GET'])
+
+@permissions.is_logged_in
+def getChatRoomMessage(request):
+  if request.method == 'POST':
+    event = request.POST.get('event_id',None)
+    if event is None:
+      return HttpResponseBadRequest(simplejson.dumps({'error': 'Incomplete data'}))
+    try:
+      event_models = models.Event.objects.filter(id=event).get()
+    except models.Event.DoesNotExist:
+      return HttpResponseBadRequest(simplejson.dumps({'error': 'Event dose not exist'}))
+    messages = models.EventChatRoom.objects.filter(event = event_models)
+    to_return = []
+    for msg in messages:
+      to_return.append({"date":msg.date.strftime("%d/%m/%y %H:%M:%S")        ,"message":msg.message,"user":msg.user.username})
+    return HttpResponse(simplejson.dumps(to_return))
+  return HttpResponseNotAllowed(['GET'])
