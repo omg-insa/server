@@ -297,7 +297,7 @@ def getEvents(request):
     url = 'https://maps.googleapis.com/maps/api/place/search/json?location=' + latitude + ',' + longitude + '&radius=' + radius + '&types=bar|night_club&name=&sensor=false&key=AIzaSyDH-hG0w9pGBjGFBcpoNb25EDaG4P11zPI'
     json = urllib2.urlopen(url).read()
     data = simplejson.load(json)
-    """TODO: stuff"""
+    """events = models.Events.objects.filter(place_id=data.results[0].reference).get()"""
     return HttpResponse(json)
   return HttpResponseNotAllowed(['GET'])
 
