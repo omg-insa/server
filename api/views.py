@@ -295,15 +295,21 @@ def _getPlaces(request):
   data = simplejson.loads(json)
   to_return = []
   for d in data['results']:
-    to_return.append({'id':d['id'],'type':'remote', 'name':d['name'] ,'description':'', 'address':d['vicinity'],'lon':d['geometry']['location']['lng'], 'lat':d['geometry']['location']['lat']})
-  """TODO: add local plices from datastore"""
+    to_return.append({'id':d['id'],'type':'remote','type':d['types'][0], 'name':d['name'] ,'description':'', 'address':d['vicinity'],'lon':d['geometry']['location']['lng'], 'lat':d['geometry']['location']['lat']})
+  dist_range = float(radius) / 111322
+  lat_range = (float(latitude)-dist_range, float(latitude)+dist_range)
+  lon_range = (float(longitude)-dist_range, float(longitude)+dist_range)
+  local_places = models.LocalPlaces.objects.filter(lat__range=lat_range)
+  for obj in local_places:
+    if obj.lon > lon_range[0] and obj.lon < lon_range[1]:
+      to_return.append({'id':obj.id,'type':'local','type':obj.type, 'name':obj.name ,'description':obj.description, 'address':obj.address,'lon':obj.lon, 'lat':obj.lat})
   return to_return
 
 @permissions.is_logged_in
 def getEvents(request):
   if request.method == 'POST':
     results = _getPlaces(request)
-    places = [ result.id for result in results ]
+    places = [ result['id'] for result in results ]
     events = models.Events.objects.filter(place_id__in=places).all()
     return HttpResponse(simplejson.dumps(events))
   return HttpResponseNotAllowed(['GET'])
@@ -433,5 +439,10 @@ def saveEventIntrests(request):
 
 @permissions.is_logged_in
 def getEventIntrests(request):
+  """TODO"""
+  return HttpResponseNotAllowed(['GET'])
+
+@permissions.is_logged_in
+def closeEvent(request):
   """TODO"""
   return HttpResponseNotAllowed(['GET'])
