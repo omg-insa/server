@@ -280,27 +280,32 @@ def updatePasswordAfterRecovery(request):
 @permissions.is_logged_in
 def getPlaces(request):
   if request.method == 'POST':
-    radius = request.POST.get('radius', None)
-    latitude = request.POST.get('latitude', None)
-    longitude = request.POST.get('longitude', None)
-    url = 'https://maps.googleapis.com/maps/api/place/search/json?location=' + latitude + ',' + longitude + '&radius=' + radius + '&types=bar|night_club&name=&sensor=false&key=AIzaSyDH-hG0w9pGBjGFBcpoNb25EDaG4P11zPI'
-    json = urllib2.urlopen(url).read()
-    """TODO: add local plices from datastore"""
-    return HttpResponse(json)
+    places = _getPlaces(request)
+    return HttpResponse(simplejson.dumps(places))
   return HttpResponseNotAllowed(['GET'])
+
+def _getPlaces(request):
+  radius = request.POST.get('radius', None)
+  latitude = request.POST.get('latitude', None)
+  longitude = request.POST.get('longitude', None)
+  if not radius or not latitude or not longitude:
+    return None
+  url = 'https://maps.googleapis.com/maps/api/place/search/json?location=' + latitude + ',' + longitude + '&radius=' + radius + '&types=bar|night_club&name=&sensor=false&key=AIzaSyDH-hG0w9pGBjGFBcpoNb25EDaG4P11zPI'
+  json = urllib2.urlopen(url).read()
+  data = simplejson.loads(json)
+  to_return = []
+  for d in data['results']:
+    to_return.append({'id':d['id'],'type':'remote', 'name':d['name'] ,'description':'', 'address':d['vicinity'],'lon':d['geometry']['location']['lng'], 'lat':d['geometry']['location']['lat']})
+  """TODO: add local plices from datastore"""
+  return to_return
 
 @permissions.is_logged_in
 def getEvents(request):
   if request.method == 'POST':
-    radius = request.POST.get('radius', None)
-    latitude = request.POST.get('latitude', None)
-    longitude = request.POST.get('longitude', None)
-    url = 'https://maps.googleapis.com/maps/api/place/search/json?location=' + latitude + ',' + longitude + '&radius=' + radius + '&types=bar|night_club&name=&sensor=false&key=AIzaSyDH-hG0w9pGBjGFBcpoNb25EDaG4P11zPI'
-    json = urllib2.urlopen(url).read()
-    data = simplejson.load(json)
+    results = _getPlaces(request)
     places = [ result.id for result in results ]
     events = models.Events.objects.filter(place_id__in=places).all()
-    return HttpResponse(events)
+    return HttpResponse(simplejson.dumps(events))
   return HttpResponseNotAllowed(['GET'])
 
 @permissions.is_logged_in
@@ -388,4 +393,45 @@ def getChatRoomMessage(request):
     for msg in messages:
       to_return.append({"date":msg.date.strftime("%d/%m/%y %H:%M:%S")        ,"message":msg.message,"user":msg.user.username})
     return HttpResponse(simplejson.dumps(to_return))
+  return HttpResponseNotAllowed(['GET'])
+
+
+@permissions.is_logged_in
+def getEventInfo(request):
+  """TODO"""
+  return HttpResponseNotAllowed(['GET'])
+
+@permissions.is_logged_in
+def saveEventInfo(request):
+  """TODO"""
+  return HttpResponseNotAllowed(['GET'])
+
+@permissions.is_logged_in
+def saveEventPlace(request):
+  """TODO"""
+  return HttpResponseNotAllowed(['GET'])
+
+@permissions.is_logged_in
+def getPersoanlEvents(request):
+  """TODO"""
+  return HttpResponseNotAllowed(['GET'])
+
+@permissions.is_logged_in
+def addLocalPlace(request):
+  """TODO"""
+  return HttpResponseNotAllowed(['GET'])
+
+@permissions.is_logged_in
+def getLocalPlaceInfo(request):
+  """TODO"""
+  return HttpResponseNotAllowed(['GET'])
+
+@permissions.is_logged_in
+def saveEventIntrests(request):
+  """TODO"""
+  return HttpResponseNotAllowed(['GET'])
+
+@permissions.is_logged_in
+def getEventIntrests(request):
+  """TODO"""
   return HttpResponseNotAllowed(['GET'])
