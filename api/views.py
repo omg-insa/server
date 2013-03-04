@@ -310,7 +310,7 @@ def getEvents(request):
   if request.method == 'POST':
     results = _getPlaces(request)
     places = [ result['id'] for result in results ]
-    events = models.Events.objects.filter(place_id__in=places).all()
+    events = models.Event.objects.filter(place_id__in=places).all()
     return HttpResponse(simplejson.dumps(events))
   return HttpResponseNotAllowed(['GET'])
 
