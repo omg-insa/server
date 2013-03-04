@@ -3,12 +3,13 @@
 <title> test </title>
 
 <style>
-  iframe { border: 0px }
+  iframe { border: 0px; height: 600px; width: 800px; }
 </style>
 
 <form method=post target=target>
   <select name=api>
     <option selected>get_places</option>
+    <option>get_events</option>
   </select>
   <br> <input type=text name=auth_token title=auth_token placeholder=auth_token>
   <br> <input type=text name=radius title=radius placeholder=radius>
