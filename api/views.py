@@ -295,14 +295,14 @@ def _getPlaces(request):
   data = simplejson.loads(json)
   to_return = []
   for d in data['results']:
-    to_return.append({'id':d['id'],'type':'remote','type':d['types'][0], 'name':d['name'] ,'description':'', 'address':d['vicinity'],'lon':d['geometry']['location']['lng'], 'lat':d['geometry']['location']['lat']})
+    to_return.append({'id':d['id'],'source':'remote','type':d['types'][0], 'name':d['name'] ,'description':'', 'address':d['vicinity'],'lon':d['geometry']['location']['lng'], 'lat':d['geometry']['location']['lat']})
   dist_range = float(radius) / 111322
   lat_range = (float(latitude)-dist_range, float(latitude)+dist_range)
   lon_range = (float(longitude)-dist_range, float(longitude)+dist_range)
   local_places = models.LocalPlaces.objects.filter(lat__range=lat_range)
   for obj in local_places:
-    if obj.lon > lon_range[0] and obj.lon < lon_range[1]:
-      to_return.append({'id':obj.id,'type':'local','type':obj.type, 'name':obj.name ,'description':obj.description, 'address':obj.address,'lon':obj.lon, 'lat':obj.lat})
+    if float(obj.lon) >= lon_range[0] and float(obj.lon) <= lon_range[1]:
+      to_return.append({'id':obj.id,'source':'local','type':obj.type, 'name':obj.name ,'description':obj.description, 'address':obj.address,'lon':obj.lon, 'lat':obj.lat})
   return to_return
 
 @permissions.is_logged_in
@@ -437,17 +437,26 @@ def addLocalPlace(request):
     type = request.POST.get('type',None)
     lon = request.POST.get('longitude', None)
     lat = request.POST.get('latitude', None)
+    id =  request.POST.get('id', None)
     if not name or not description or not type or not lon or not lat:
       return HttpResponseBadRequest(simplejson.dumps({'error': 'Incomplete data'}))
-    try:
-      event_models = models.Event.objects.filter(id=event).get()
-    except models.Event.DoesNotExist:
-      return HttpResponseBadRequest(simplejson.dumps({'error': 'Event dose not exist'}))
-    messages = models.EventChatRoom.objects.filter(event = event_models)
-    to_return = []
-    for msg in messages:
-      to_return.append({"date":msg.date.strftime("%d/%m/%y %H:%M:%S")        ,"message":msg.message,"user":msg.user.username})
-    return HttpResponse(simplejson.dumps(to_return))
+    if not id:
+      place = models.LocalPlaces(name=name,description=description,lon=lon,lat=lat,type=type,address=_convertToAddress(lon,lat))
+      place.save()
+      return HttpResponse(simplejson.dumps({'id':place.id}))
+    else:
+      try:
+        place = models.LocalPlaces.objects.filter(id=id).get()
+        place.name = name
+        place.description = description
+        place.type = type
+        place.lon = lon
+        place.lat = lat
+        place.address = _convertToAddress(lon,lat)
+        place.save()
+        return HttpResponse(simplejson.dumps({'id':place.id}))
+      except models.LocalPlaces.DoesNotExist:
+        return HttpResponseBadRequest(simplejson.dumps({'error': 'Object does not exists'}))
   return HttpResponseNotAllowed(['GET'])
 
 @permissions.is_logged_in
