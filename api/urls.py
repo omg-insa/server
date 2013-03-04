@@ -21,7 +21,6 @@ urlpatterns = patterns('',
   (r'^update_intrests/$', 'api.views.updateUserIntrest'),
   (r'^add_intrests/$', 'api.views.addIntrest'),
   (r'^add_message/$', 'api.views.addChatRoomMessage'),
-  (r'^add_event/$', 'api.views.addEvent'),
   (r'^get_messages/$', 'api.views.getChatRoomMessage'),
 
 

@@ -357,15 +357,6 @@ def addIntrest(request):
   return HttpResponse(simplejson.dumps({'empty':'empty'}))
 
 @permissions.is_logged_in
-def addEvent(request):
-  """TODO"""
-  token = request.POST.get('auth_token', None)
-  auth_token = models.TokenAuthModel.objects.filter(token=token).get()
-  user = auth_token.user
-  models.Event(name=request.GET.get('name',""),start_time = datetime.datetime.now(),creator_id=user, end_time = datetime.datetime.now()).save()
-  return HttpResponse(simplejson.dumps({'empty':'empty'}))
-
-@permissions.is_logged_in
 def addChatRoomMessage(request):
   if request.method == 'POST':
     token = request.POST.get('auth_token', None)
@@ -422,9 +413,26 @@ def getPersoanlEvents(request):
   """TODO"""
   return HttpResponseNotAllowed(['GET'])
 
+def _convert
 @permissions.is_logged_in
 def addLocalPlace(request):
-  """TODO"""
+  if request.method == 'POST':
+    name = request.POST.get('name',None)
+    description = request.POST.get('description',None)
+    type = request.POST.get('type',None)
+    lon = request.POST.get('lon', None)
+    lat = request.POST.get('lat', None)
+    if not name or not description or not type or not lon or not lat:
+      return HttpResponseBadRequest(simplejson.dumps({'error': 'Incomplete data'}))
+    try:
+      event_models = models.Event.objects.filter(id=event).get()
+    except models.Event.DoesNotExist:
+      return HttpResponseBadRequest(simplejson.dumps({'error': 'Event dose not exist'}))
+    messages = models.EventChatRoom.objects.filter(event = event_models)
+    to_return = []
+    for msg in messages:
+      to_return.append({"date":msg.date.strftime("%d/%m/%y %H:%M:%S")        ,"message":msg.message,"user":msg.user.username})
+    return HttpResponse(simplejson.dumps(to_return))
   return HttpResponseNotAllowed(['GET'])
 
 @permissions.is_logged_in
