@@ -409,7 +409,7 @@ def saveEventPlace(request):
   return HttpResponseNotAllowed(['GET'])
 
 @permissions.is_logged_in
-def getPersoanlEvents(request):
+def getPersonalEvents(request):
   """TODO"""
   return HttpResponseNotAllowed(['GET'])
 
@@ -420,13 +420,23 @@ def _convertToAddress(lon,lat):
   return data['results'][0]['formatted_address']
 
 @permissions.is_logged_in
+def getCurrentAddress(request):
+  if request.method == 'POST':
+    lon = request.POST.get('longitude', None)
+    lat = request.POST.get('latitude', None)
+    if not lon or not lat:
+      return HttpResponseBadRequest(simplejson.dumps({'error': 'Incomplete data'}))
+    return HttpResponse(simplejson.dumps({'address':_convertToAddress(lon,lat)}))
+  return HttpResponseNotAllowed(['GET'])
+
+@permissions.is_logged_in
 def addLocalPlace(request):
   if request.method == 'POST':
     name = request.POST.get('name',None)
     description = request.POST.get('description',None)
     type = request.POST.get('type',None)
-    lon = request.POST.get('lon', None)
-    lat = request.POST.get('lat', None)
+    lon = request.POST.get('longitude', None)
+    lat = request.POST.get('latitude', None)
     if not name or not description or not type or not lon or not lat:
       return HttpResponseBadRequest(simplejson.dumps({'error': 'Incomplete data'}))
     try:
