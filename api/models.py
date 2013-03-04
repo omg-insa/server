@@ -42,13 +42,8 @@ class ExtraInfoForUser(models.Model):
   status = models.CharField(max_length=100)
 
 
-class Location(models.Model):
-  name = models.CharField(max_length=100)
-  x = models.FloatField()
-  y = models.FloatField()
-
 class Event(models.Model):
-  location = models.ForeignKey(Location, related_name='location_value')
+  place_id = models.CharField(max_length=100)
 
 class Subscription(models.Model):
   user = models.ForeignKey(User, related_name='subscriber')
