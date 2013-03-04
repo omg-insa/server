@@ -25,6 +25,15 @@ class RecoveryTokens(models.Model):
   user =  models.ForeignKey(User, related_name='for_who_must_recover')
   expiringDate =  models.DateTimeField()
 
+class LocalPlaces(models.Model):
+  name =  models.CharField(max_length=100)
+  description =  models.CharField(max_length=10000)
+  lon = models.CharField(max_length=100)
+  lat = models.CharField(max_length=100)
+  address = models.CharField(max_length=1000)
+  type = models.CharField(max_length=100)
+
+
 class TokenAuthModel(models.Model):
   """Auth token model for devices"""
   user = models.ForeignKey(User, related_name='token_username')
@@ -44,10 +53,25 @@ class ExtraInfoForUser(models.Model):
 
 class Event(models.Model):
   place_id = models.CharField(max_length=100)
+  local = models.BooleanField(default=False)
+  name = models.CharField(max_length=100)
+  start_time = models.DateTimeField()
+  end_time = models.DateTimeField()
+  persons_number = models.CharField(max_length=100)
+  description = models.CharField(max_length=100)
+  age_average = models.CharField(max_length=100)
+  price =  models.CharField(max_length=100)
+  womam_average = models.CharField(max_length=100)
+  single_average =  models.CharField(max_length=100)
+  status =  models.CharField(max_length=100)
+  creator_id =  models.ForeignKey(User, related_name='event_createor')
+  grade = models.CharField(max_length=100)
+
 
 class Subscription(models.Model):
   user = models.ForeignKey(User, related_name='subscriber')
   event = models.ForeignKey(Event, related_name='subscribed')
+  grade = models.CharField(max_length=100)
 
 
 class ListModel(models.Model):
