@@ -413,7 +413,12 @@ def getPersoanlEvents(request):
   """TODO"""
   return HttpResponseNotAllowed(['GET'])
 
-def _convert
+def _convertToAddress(lon,lat):
+  url = 'http://maps.googleapis.com/maps/api/geocode/json?latlng='+lat+','+lon+'&sensor=false'
+  json = urllib2.urlopen(url).read()
+  data = simplejson.loads(json)
+  return data['results'][0]['formatted_address']
+
 @permissions.is_logged_in
 def addLocalPlace(request):
   if request.method == 'POST':
