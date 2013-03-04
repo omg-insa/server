@@ -311,7 +311,7 @@ def getEvents(request):
     results = _getPlaces(request)
     places = [ result['id'] for result in results ]
     events = models.Event.objects.filter(place_id__in=places).all()
-    return HttpResponse(simplejson.dumps(events))
+    return HttpResponse(simplejson.dumps([ e for e in events ]))
   return HttpResponseNotAllowed(['GET'])
 
 @permissions.is_logged_in
