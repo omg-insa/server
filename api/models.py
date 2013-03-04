@@ -67,6 +67,15 @@ class Event(models.Model):
   creator_id =  models.ForeignKey(User, related_name='event_createor')
   grade = models.CharField(max_length=100)
 
+class EventIntrests(models.Model):
+  event = models.ForeignKey(Event, related_name='event_intrest_ev')
+  intrest = models.ForeignKey(Intrests, related_name='event_intrest_int')
+
+class EventChatRoom(models.Model):
+  event = models.ForeignKey(Event, related_name='event_chat_ev')
+  message =  models.CharField(max_length=10000)
+  user = models.ForeignKey(User, related_name='event_chat_user')
+  date = models.DateTimeField()
 
 class Subscription(models.Model):
   user = models.ForeignKey(User, related_name='subscriber')
