@@ -283,11 +283,21 @@ def getPlaces(request):
     radius = request.POST.get('radius', None)
     latitude = request.POST.get('latitude', None)
     longitude = request.POST.get('longitude', None)
-    """TODO: get from cache if possible"""
-    """TODO: put things into cache"""
+    url = 'https://maps.googleapis.com/maps/api/place/search/json?location=' + latitude + ',' + longitude + '&radius=' + radius + '&types=bar|night_club&name=&sensor=false&key=AIzaSyDH-hG0w9pGBjGFBcpoNb25EDaG4P11zPI'
+    json = urllib2.urlopen(url).read()
+    return HttpResponse(json)
+  return HttpResponseNotAllowed(['GET'])
+
+@permissions.is_logged_in
+def getEvents(request):
+  if request.method == 'POST':
+    radius = request.POST.get('radius', None)
+    latitude = request.POST.get('latitude', None)
+    longitude = request.POST.get('longitude', None)
     url = 'https://maps.googleapis.com/maps/api/place/search/json?location=' + latitude + ',' + longitude + '&radius=' + radius + '&types=bar|night_club&name=&sensor=false&key=AIzaSyDH-hG0w9pGBjGFBcpoNb25EDaG4P11zPI'
     json = urllib2.urlopen(url).read()
     data = simplejson.load(json)
+    """TODO: stuff"""
     return HttpResponse(json)
   return HttpResponseNotAllowed(['GET'])
 
