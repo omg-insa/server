@@ -485,15 +485,22 @@ def getPersonalEvents(request):
     personalEvents = models.Event.objects.filter(creator_id=auth_token.user)
     to_return = []
     for event in personalEvents:
-      if event.local:
-        place = models.LocalPlaces.objects.filter(id=event.place_id).get()
-        lon = place.lon
-        lat = place.lat
-      else:
-        place = _getPlaceDetails(event.id)
-        lon = place['geometry']['location']['lng']
-        lat = place['geometry']['location']['lon']
-      to_return.append({'id':event.id,'name':event.name,'description':event.description, 'start_time':event.start_time, 'end_time': event.end_time, 'lon':lon,'lat':lat})
+      try:
+        if event.local:
+          if not event.place_id:
+            lon=lat=0
+          else:
+            place = models.LocalPlaces.objects.filter(id=event.place_id).get()
+            lon = place.lon
+            lat = place.lat
+        else:
+          place = _getPlaceDetails(event.id)
+          lon = place['geometry']['location']['lng']
+          lat = place['geometry']['location']['lon']
+      except models.LocalPlaces.DoesNotExist:
+        lon = lat = 0;
+      if lon > 0 and lat >0:
+        to_return.append({'id':event.id,'name':event.name,'description':event.description, 'start_time':event.start_time, 'end_time': event.end_time, 'lon':lon,'lat':lat})
     return HttpResponseBadRequest(simplejson.dumps({'list':to_return}))
   return HttpResponseNotAllowed(['GET'])
 
