@@ -83,7 +83,7 @@ def register(request):
       return HttpResponseBadRequest(simplejson.dumps({'error': 'User already registered'}))
     new_user=User.objects.create_user(username, email, password)
     new_user.save()
-    return HttpResponse(simplejson.dumps({'empty':'empty'}))
+    return HttpResponse(simplejson.dumps({'empty': 'empty'}))
   return HttpResponseNotAllowed(['GET'])
 
 @permissions.is_logged_in
@@ -106,7 +106,7 @@ def getFullUserInfo(request):
     except models.ExtraInfoForUser.DoesNotExist:
       personalInfo = models.ExtraInfoForUser(user=user)
       personalInfo.save()
-    dictToReturn = {'full_name': user.first_name, 'email': user.email, 'birthday': personalInfo.birthday, 'sex': personalInfo.sex, 'status':personalInfo.status ,'username': user.username}
+    dictToReturn = {'full_name': user.first_name, 'email': user.email, 'birthday': personalInfo.birthday, 'sex': personalInfo.sex, 'status': personalInfo.status, 'username': user.username}
     return HttpResponse(simplejson.dumps(dictToReturn))
   return HttpResponseNotAllowed(['GET'])
 
@@ -118,7 +118,7 @@ def updateUserInfo(request):
     email = request.POST.get('email', None)
     birthday = request.POST.get('birthday', None)
     sex = request.POST.get('sex', None)
-    status = request.POST.get('status',None)
+    status = request.POST.get('status', None)
     auth_token = models.TokenAuthModel.objects.filter(token=token).get()
     user = auth_token.user
     users = User.objects.filter(email=email)
@@ -131,7 +131,7 @@ def updateUserInfo(request):
     try:
       personalInfo = models.ExtraInfoForUser.objects.filter(user=user).get()
     except modesl.ExtraInfoForUser.DoesNotExist:
-      personalInfo = models.ExtraInfoForUser(user=user, sex=sex, birthday=birthday,status=status)
+      personalInfo = models.ExtraInfoForUser(user=user, sex=sex, birthday=birthday, status=status)
       personalInfo.save()
     user.first_name = first_name
     personalInfo.status = status
@@ -140,7 +140,7 @@ def updateUserInfo(request):
     personalInfo.save()
     user.email = email
     user.save()
-    return HttpResponse(simplejson.dumps({'empty':'empty'})) 
+    return HttpResponse(simplejson.dumps({'empty': 'empty'}))
   return HttpResponseNotAllowed(['GET'])
 
 @permissions.is_logged_in
@@ -165,7 +165,7 @@ def updateSecretQuestion(request):
     secret_question = request.POST.get('secret_question', None)
     secret_answer = request.POST.get('secret_answer', None)
     password = request.POST.get('password', None)
-    logging.error("%s", request.POST)
+    logging.error('%s', request.POST)
     auth_token = models.TokenAuthModel.objects.filter(token=token).get()
     user = auth_token.user
     if secret_question is None or secret_answer is None or password is None:
@@ -180,7 +180,7 @@ def updateSecretQuestion(request):
     personalInfo.secret_question = secret_question
     personalInfo.secret_answer = secret_answer
     personalInfo.save()
-    return HttpResponse(simplejson.dumps({'empty':'empty'})) 
+    return HttpResponse(simplejson.dumps({'empty': 'empty'}))
   return HttpResponseNotAllowed(['GET'])
 
 @permissions.is_logged_in
@@ -197,7 +197,7 @@ def updatePassword(request):
       return HttpResponseBadRequest(simplejson.dumps({'error': 'Wrong password'}))
     user.set_password(new_password)
     user.save()
-    return HttpResponse(simplejson.dumps({'empty':'empty'})) 
+    return HttpResponse(simplejson.dumps({'empty': 'empty'}))
   return HttpResponseNotAllowed(['GET'])
 
 @permissions.is_logged_in
@@ -211,7 +211,7 @@ def checkProfileCompletion(request):
       return HttpResponseBadRequest(simplejson.dumps({'error': 'No data'}))
     if extra_info.secret_question == '' or extra_info.secret_answer == ''  or extra_info.birthday == '' or extra_info.sex == '':
       return HttpResponseBadRequest(simplejson.dumps({'error': 'No data'}))
-    return HttpResponse(simplejson.dumps({'empty':'empty'})) 
+    return HttpResponse(simplejson.dumps({'empty': 'empty'}))
   return HttpResponseNotAllowed(['GET'])
 
 
@@ -275,7 +275,7 @@ def updatePasswordAfterRecovery(request):
         user.save()
     except (models.RecoveryTokens.DoesNotExist, User.DoesNotExist):
       return HttpResponseBadRequest(simplejson.dumps({'error': 'Wrong data'}))
-    return HttpResponse(simplejson.dumps({'empty':'empty'})) 
+    return HttpResponse(simplejson.dumps({'empty': 'empty'}))
 
 def _getPlaceDetails(place_id):
   if not place_id:
@@ -303,14 +303,14 @@ def _getPlaces(request):
   data = simplejson.loads(json)
   to_return = []
   for d in data['results']:
-    to_return.append({'id':d['reference'],'source':'remote','type':d['types'][0], 'name':d['name'] ,'description':'', 'address':d['vicinity'],'lon':d['geometry']['location']['lng'], 'lat':d['geometry']['location']['lat']})
+    to_return.append({'id': d['reference'], 'source': 'remote', 'type': d['types'][0], 'name': d['name'], 'description': '', 'address': d['vicinity'], 'lon': d['geometry']['location']['lng'], 'lat': d['geometry']['location']['lat']})
   dist_range = float(radius) / 111322
   lat_range = (float(latitude)-dist_range, float(latitude)+dist_range)
   lon_range = (float(longitude)-dist_range, float(longitude)+dist_range)
   local_places = models.LocalPlaces.objects.filter(lat__range=lat_range)
   for obj in local_places:
     if float(obj.lon) >= lon_range[0] and float(obj.lon) <= lon_range[1]:
-      to_return.append({'id':obj.id,'source':'local','type':obj.type, 'name':obj.name ,'description':obj.description, 'address':obj.address,'lon':obj.lon, 'lat':obj.lat})
+      to_return.append({'id': obj.id, 'source': 'local', 'type': obj.type, 'name': obj.name, 'description': obj.description, 'address': obj.address, 'lon': obj.lon, 'lat': obj.lat})
   return to_return
 
 @permissions.is_logged_in
@@ -334,15 +334,15 @@ def getIntrestsList(request):
       isSelected = False
       if models.UserIntrest.objects.filter(user=user, intrest=i).count():
         isSelected = True
-      toReturn.append({'name': i.name, 'description':i.description, 'selected': isSelected, 'id':i.id})
-    return HttpResponse(simplejson.dumps({'list':toReturn}))
+      toReturn.append({'name': i.name, 'description': i.description, 'selected': isSelected, 'id': i.id})
+    return HttpResponse(simplejson.dumps({'list': toReturn}))
   return HttpResponseNotAllowed(['GET'])
 
 @permissions.is_logged_in
 def updateUserIntrest(request):
   if request.method == 'POST':
     token = request.POST.get('auth_token', None)
-    intrest = request.POST.get('intrest',None)
+    intrest = request.POST.get('intrest', None)
     if intrest is None:
       return HttpResponseBadRequest(simplejson.dumps({'error': 'Incomplete data'}))
     auth_token = models.TokenAuthModel.objects.filter(token=token).get()
@@ -355,21 +355,21 @@ def updateUserIntrest(request):
       user_intrest = models.UserIntrest.objects.filter(user=user, intrest=intrest_model).get()
       user_intrest.delete()
     except models.UserIntrest.DoesNotExist:
-      user_intrest = models.UserIntrest(user=user,intrest=intrest_model)
+      user_intrest = models.UserIntrest(user=user, intrest=intrest_model)
       user_intrest.save()
-    return HttpResponse(simplejson.dumps({'empty':'empty'}))
+    return HttpResponse(simplejson.dumps({'empty': 'empty'}))
   return HttpResponseNotAllowed(['GET'])
 
 def addIntrest(request):
-  models.Intrests(name=request.GET.get('name',""),description=request.GET.get('description',"")).save()
-  return HttpResponse(simplejson.dumps({'empty':'empty'}))
+  models.Intrests(name=request.GET.get('name', ''), description=request.GET.get('description', '')).save()
+  return HttpResponse(simplejson.dumps({'empty': 'empty'}))
 
 @permissions.is_logged_in
 def addChatRoomMessage(request):
   if request.method == 'POST':
     token = request.POST.get('auth_token', None)
-    message = request.POST.get('message',None)
-    event = request.POST.get('event_id',None)
+    message = request.POST.get('message', None)
+    event = request.POST.get('event_id', None)
     if message is None or event is None:
       return HttpResponseBadRequest(simplejson.dumps({'error': 'Incomplete data'}))
     auth_token = models.TokenAuthModel.objects.filter(token=token).get()
@@ -378,15 +378,15 @@ def addChatRoomMessage(request):
     except models.Event.DoesNotExist:
       return HttpResponseBadRequest(simplejson.dumps({'error': 'Event dose not exist'}))
     user = auth_token.user
-    message_model = models.EventChatRoom(user=user,message=message,event=event_models,date = datetime.datetime.now())
+    message_model = models.EventChatRoom(user=user, message=message, event=event_models, date = datetime.datetime.now())
     message_model.save()
-    return HttpResponse(simplejson.dumps({'empty':'empty'}))
+    return HttpResponse(simplejson.dumps({'empty': 'empty'}))
   return HttpResponseNotAllowed(['GET'])
 
 @permissions.is_logged_in
 def getChatRoomMessage(request):
   if request.method == 'POST':
-    event = request.POST.get('event_id',None)
+    event = request.POST.get('event_id', None)
     if event is None:
       return HttpResponseBadRequest(simplejson.dumps({'error': 'Incomplete data'}))
     try:
@@ -413,7 +413,7 @@ def getEventInfo(request):
       event = models.Event.objects.filter(id=id).get()
       if event.creator_id != auth_token.user:
         return HttpResponseBadRequest(simplejson.dumps({'error': 'Forbidden to edit'}))
-      return HttpResponse(simplejson.dumps({'name':event.name,'close':event.status, 'description':event.description,'price':event.price,'start_time':event.start_time,'end_time':event.end_time}))
+      return HttpResponse(simplejson.dumps({'name': event.name, 'close': event.status, 'description': event.description, 'price': event.price, 'start_time': event.start_time, 'end_time': event.end_time}))
     except models.LocalPlaces.DoesNotExist:
       return HttpResponseBadRequest(simplejson.dumps({'error': 'Object does not exists'}))
   return HttpResponseNotAllowed(['GET'])
@@ -421,9 +421,9 @@ def getEventInfo(request):
 @permissions.is_logged_in
 def saveEventInfo(request):
   if request.method == 'POST':
-    name = request.POST.get('name',None)
-    description = request.POST.get('description',None)
-    start_time = request.POST.get('start_time',None)
+    name = request.POST.get('name', None)
+    description = request.POST.get('description', None)
+    start_time = request.POST.get('start_time', None)
     end_time = request.POST.get('end_time', None)
     price = request.POST.get('price', None)
     id =  request.POST.get('id', None)
@@ -432,9 +432,9 @@ def saveEventInfo(request):
     if not name or not description or not start_time or not end_time or not price:
       return HttpResponseBadRequest(simplejson.dumps({'error': 'Incomplete data'}))
     if not id:
-      event = models.Event(name=name,description=description,start_time=start_time,end_time=end_time, price=price, creator_id=auth_token.user)
+      event = models.Event(name=name, description=description, start_time=start_time, end_time=end_time, price=price, creator_id=auth_token.user)
       event.save()
-      return HttpResponse(simplejson.dumps({'id':event.id}))
+      return HttpResponse(simplejson.dumps({'id': event.id}))
     else:
       try:
         event = models.Event.objects.filter(id=id).get()
@@ -446,7 +446,7 @@ def saveEventInfo(request):
         if event.creator_id != auth_token.user:
           return HttpResponseBadRequest(simplejson.dumps({'error': 'Forbidden to edit'}))
         event.save()
-        return HttpResponse(simplejson.dumps({'id':event.id}))
+        return HttpResponse(simplejson.dumps({'id': event.id}))
       except models.LocalPlaces.DoesNotExist:
         return HttpResponseBadRequest(simplejson.dumps({'error': 'Object does not exists'}))
   return HttpResponseNotAllowed(['GET'])
@@ -454,9 +454,9 @@ def saveEventInfo(request):
 @permissions.is_logged_in
 def saveEventPlace(request):
   if request.method == 'POST':
-    place_id = request.POST.get('place_id',None)
-    event_id = request.POST.get('event_id',None)
-    place_type = request.POST.get('is_local',False)
+    place_id = request.POST.get('place_id', None)
+    event_id = request.POST.get('event_id', None)
+    place_type = request.POST.get('is_local', False)
     token = request.POST.get('auth_token', None)
     auth_token = models.TokenAuthModel.objects.filter(token=token).get()
     if not place_id or not event_id or not place_type:
@@ -497,8 +497,8 @@ def getPersonalEvents(request):
     return HttpResponseBadRequest(simplejson.dumps({'list':to_return}))
   return HttpResponseNotAllowed(['GET'])
 
-def _convertToAddress(lon,lat):
-  url = 'http://maps.googleapis.com/maps/api/geocode/json?latlng='+lat+','+lon+'&sensor=false'
+def _convertToAddress(lon, lat):
+  url = 'http://maps.googleapis.com/maps/api/geocode/json?latlng='+lat+', '+lon+'&sensor=false'
   json = urllib2.urlopen(url).read()
   data = simplejson.loads(json)
   return data['results'][0]['formatted_address']
@@ -510,24 +510,24 @@ def getCurrentAddress(request):
     lat = request.POST.get('latitude', None)
     if not lon or not lat:
       return HttpResponseBadRequest(simplejson.dumps({'error': 'Incomplete data'}))
-    return HttpResponse(simplejson.dumps({'address':_convertToAddress(lon,lat)}))
+    return HttpResponse(simplejson.dumps({'address': _convertToAddress(lon, lat)}))
   return HttpResponseNotAllowed(['GET'])
 
 @permissions.is_logged_in
 def addLocalPlace(request):
   if request.method == 'POST':
-    name = request.POST.get('name',None)
-    description = request.POST.get('description',None)
-    type = request.POST.get('type',None)
+    name = request.POST.get('name', None)
+    description = request.POST.get('description', None)
+    type = request.POST.get('type', None)
     lon = request.POST.get('longitude', None)
     lat = request.POST.get('latitude', None)
     id =  request.POST.get('id', None)
     if not name or not description or not type or not lon or not lat:
       return HttpResponseBadRequest(simplejson.dumps({'error': 'Incomplete data'}))
     if not id:
-      place = models.LocalPlaces(name=name,description=description,lon=lon,lat=lat,type=type,address=_convertToAddress(lon,lat))
+      place = models.LocalPlaces(name=name, description=description, lon=lon, lat=lat, type=type, address=_convertToAddress(lon, lat))
       place.save()
-      return HttpResponse(simplejson.dumps({'id':place.id}))
+      return HttpResponse(simplejson.dumps({'id': place.id}))
     else:
       try:
         place = models.LocalPlaces.objects.filter(id=id).get()
@@ -536,9 +536,9 @@ def addLocalPlace(request):
         place.type = type
         place.lon = lon
         place.lat = lat
-        place.address = _convertToAddress(lon,lat)
+        place.address = _convertToAddress(lon, lat)
         place.save()
-        return HttpResponse(simplejson.dumps({'id':place.id}))
+        return HttpResponse(simplejson.dumps({'id': place.id}))
       except models.LocalPlaces.DoesNotExist:
         return HttpResponseBadRequest(simplejson.dumps({'error': 'Object does not exists'}))
   return HttpResponseNotAllowed(['GET'])
@@ -551,7 +551,7 @@ def getLocalPlaceInfo(request):
       return HttpResponseBadRequest(simplejson.dumps({'error': 'Incomplete data'}))
     try:
       place = models.LocalPlaces.objects.filter(id=id).get()
-      return HttpResponse(simplejson.dumps({'name':place.name,'description':place.description,'type':place.type,'lon':place.lon,'lat':place.lat,'address':place.address}))
+      return HttpResponse(simplejson.dumps({'name': place.name, 'description': place.description, 'type': place.type, 'lon': place.lon, 'lat': place.lat, 'address': place.address}))
     except models.LocalPlaces.DoesNotExist:
       return HttpResponseBadRequest(simplejson.dumps({'error': 'Object does not exists'}))
   return HttpResponseNotAllowed(['GET'])
@@ -560,7 +560,7 @@ def getLocalPlaceInfo(request):
 def saveEventIntrests(request):
   if request.method == 'POST':
     event_id = request.POST.get('event_id', None)
-    intrest = request.POST.get('intrest_id',None)
+    intrest = request.POST.get('intrest_id', None)
     if intrest is None or not event_id:
       return HttpResponseBadRequest(simplejson.dumps({'error': 'Incomplete data'}))
     try:
@@ -575,9 +575,9 @@ def saveEventIntrests(request):
       event_intrest = models.EventIntrests.objects.filter(event=event_model, intrest=intrest_model).get()
       event_intrest.delete()
     except models.EventIntrests.DoesNotExist:
-      event_intrest = models.EventIntrests(event=event_model,intrest=intrest_model)
+      event_intrest = models.EventIntrests(event=event_model, intrest=intrest_model)
       event_intrest.save()
-    return HttpResponse(simplejson.dumps({'empty':'empty'}))
+    return HttpResponse(simplejson.dumps({'empty': 'empty'}))
   return HttpResponseNotAllowed(['GET'])
 
 @permissions.is_logged_in
