@@ -396,7 +396,7 @@ def getChatRoomMessage(request):
     messages = models.EventChatRoom.objects.filter(event = event_models)
     to_return = []
     for msg in messages:
-      to_return.append({"date":msg.date.strftime("%d/%m/%y %H:%M:%S")        ,"message":msg.message,"user":msg.user.username})
+      to_return.append({"date":msg.date.strftime("%d/%m/%y %H:%M:%S"),"message":msg.message,"user":msg.user.username})
     return HttpResponse(simplejson.dumps(to_return))
   return HttpResponseNotAllowed(['GET'])
 
@@ -413,7 +413,7 @@ def getEventInfo(request):
       event = models.Event.objects.filter(id=id).get()
       if event.creator_id != auth_token.user:
         return HttpResponseBadRequest(simplejson.dumps({'error': 'Forbidden to edit'}))
-      return HttpResponse(simplejson.dumps({'name':event.name,'description':event.description,'price':event.price,'start_time':event.start_time,'end_time':event.end_time}))
+      return HttpResponse(simplejson.dumps({'name':event.name,'close':event.status, 'description':event.description,'price':event.price,'start_time':event.start_time,'end_time':event.end_time}))
     except models.LocalPlaces.DoesNotExist:
       return HttpResponseBadRequest(simplejson.dumps({'error': 'Object does not exists'}))
   return HttpResponseNotAllowed(['GET'])
@@ -490,9 +490,9 @@ def getPersonalEvents(request):
         lon = place.lon
         lat = place.lat
       else:
-        #TODO call YAN function
-        lon = 100
-        lat = 100
+        place = _getPlaceDetails(event.id)
+        lon = place['geometry']['location']['lng']
+        lat = place['geometry']['location']['lon']
       to_return.append({'id':event.id,'name':event.name,'description':event.description, 'start_time':event.start_time, 'end_time': event.end_time, 'lon':lon,'lat':lat})
     return HttpResponseBadRequest(simplejson.dumps(to_return))
   return HttpResponseNotAllowed(['GET'])
@@ -582,10 +582,39 @@ def saveEventIntrests(request):
 
 @permissions.is_logged_in
 def getEventIntrests(request):
-  """TODO"""
+  if request.method == 'POST':
+    event_id = request.POST.get('event_id', None)
+    if not event_id:
+      return HttpResponseBadRequest(simplejson.dumps({'error': 'Incomplete data'}))
+    try:
+      event_model = models.Event.objects.filter(id=event_id).get()
+    except models.Intrests.DoesNotExist:
+      return HttpResponseBadRequest(simplejson.dumps({'error': 'Event dose not exist'}))
+    intrests = models.Intrests.objects.all()
+    toReturn = []
+    for i in intrests:
+      isSelected = False
+      if models.EventIntrests.objects.filter(event=event_model, intrest=i).count():
+        isSelected = True
+      toReturn.append({'name': i.name, 'description':i.description, 'selected': isSelected, 'id':i.id})
+    return HttpResponse(simplejson.dumps({'list':toReturn}))
   return HttpResponseNotAllowed(['GET'])
 
 @permissions.is_logged_in
 def closeEvent(request):
-  """TODO"""
+  if request.method == 'POST':
+    event_id = request.POST.get('event_id',None)
+    token = request.POST.get('auth_token', None)
+    auth_token = models.TokenAuthModel.objects.filter(token=token).get()
+    if not event_id:
+      return HttpResponseBadRequest(simplejson.dumps({'error': 'Incomplete data'}))
+    try:
+      event = models.Event.objects.filter(id=event_id).get()
+      if event.creator_id != auth_token.user:
+        return HttpResponseBadRequest(simplejson.dumps({'error': 'Forbidden to edit'}))
+      event.status = 'Closed'
+      event.save()
+      return HttpResponseBadRequest(simplejson.dumps({'id': event.id}))
+    except models.LocalPlaces.DoesNotExist:
+      return HttpResponseBadRequest(simplejson.dumps({'error': 'Object does not exists'}))
   return HttpResponseNotAllowed(['GET'])
