@@ -295,7 +295,7 @@ def _getPlaces(request):
   data = simplejson.loads(json)
   to_return = []
   for d in data['results']:
-    to_return.append({'id':d['id'],'source':'remote','type':d['types'][0], 'name':d['name'] ,'description':'', 'address':d['vicinity'],'lon':d['geometry']['location']['lng'], 'lat':d['geometry']['location']['lat']})
+    to_return.append({'id':d['reference'],'source':'remote','type':d['types'][0], 'name':d['name'] ,'description':'', 'address':d['vicinity'],'lon':d['geometry']['location']['lng'], 'lat':d['geometry']['location']['lat']})
   dist_range = float(radius) / 111322
   lat_range = (float(latitude)-dist_range, float(latitude)+dist_range)
   lon_range = (float(longitude)-dist_range, float(longitude)+dist_range)
@@ -435,7 +435,8 @@ def saveEventInfo(request):
         event.start_time = start_time
         event.end_time = end_time
         event.price = price
-        event.creator_id = auth_token.user
+        if event.creator_id != auth_token.user:
+          return HttpResponseBadRequest(simplejson.dumps({'error': 'Forbidden to edit'}))
         event.save()
         return HttpResponse(simplejson.dumps({'id':event.id}))
       except models.LocalPlaces.DoesNotExist:
@@ -445,38 +446,47 @@ def saveEventInfo(request):
 @permissions.is_logged_in
 def saveEventPlace(request):
   if request.method == 'POST':
-    name = request.POST.get('name',None)
-    description = request.POST.get('description',None)
-    start_time = request.POST.get('start_time',None)
-    end_time = request.POST.get('end_time', None)
-    price = request.POST.get('price', None)
-    id =  request.POST.get('id', None)
+    place_id = request.POST.get('place_id',None)
+    event_id = request.POST.get('event_id',None)
+    place_type = request.POST.get('is_local',False)
     token = request.POST.get('auth_token', None)
     auth_token = models.TokenAuthModel.objects.filter(token=token).get()
-    if not name or not description or not start_time or not end_time or not price:
+    if not place_id or not event_id or not place_type:
       return HttpResponseBadRequest(simplejson.dumps({'error': 'Incomplete data'}))
-    if not id:
-      event = models.Event(name=name,description=description,start_time=start_time,end_time=end_time, price=price, creator_id=auth_token.user)
+    try:
+      place = models.LocalPlaces.objects.filter(id=place_id).get()
+    except models.LocalPlaces.DoesNotExist:
+      return HttpResponseBadRequest(simplejson.dumps({'error': 'Object does not exists'}))
+    try:
+      event = models.Event.objects.filter(id=event_id).get()
+      if event.creator_id != auth_token.user:
+        return HttpResponseBadRequest(simplejson.dumps({'error': 'Forbidden to edit'}))
+      event.local = place_type
+      event.place_id = place.id
       event.save()
-      return HttpResponse(simplejson.dumps({'id':event.id}))
-    else:
-      try:
-        event = models.Event.objects.filter(id=id).get()
-        event.name = name
-        event.description = description
-        event.start_time = start_time
-        event.end_time = end_time
-        event.price = price
-        event.creator_id = auth_token.user
-        event.save()
-        return HttpResponse(simplejson.dumps({'id':event.id}))
-      except models.LocalPlaces.DoesNotExist:
-        return HttpResponseBadRequest(simplejson.dumps({'error': 'Object does not exists'}))
+      return HttpResponseBadRequest(simplejson.dumps({'id': event.id}))
+    except models.LocalPlaces.DoesNotExist:
+      return HttpResponseBadRequest(simplejson.dumps({'error': 'Object does not exists'}))
   return HttpResponseNotAllowed(['GET'])
 
 @permissions.is_logged_in
 def getPersonalEvents(request):
-  """TODO"""
+  if request.method == 'POST':
+    token = request.POST.get('auth_token', None)
+    auth_token = models.TokenAuthModel.objects.filter(token=token).get()
+    personalEvents = models.Event.objects.filter(creator_id=auth_token.user)
+    to_return = []
+    for event in personalEvents:
+      if event.local:
+        place = models.LocalPlaces.objects.filter(id=event.place_id).get()
+        lon = place.lon
+        lat = place.lat
+      else:
+        #TODO call YAN function
+        lon = 100
+        lat = 100
+      to_return.append({'id':event.id,'name':event.name,'description':event.description, 'start_time':event.start_time, 'end_time': event.end_time, 'lon':lon,'lat':lat})
+    return HttpResponseBadRequest(simplejson.dumps(to_return))
   return HttpResponseNotAllowed(['GET'])
 
 def _convertToAddress(lon,lat):
@@ -540,7 +550,26 @@ def getLocalPlaceInfo(request):
 
 @permissions.is_logged_in
 def saveEventIntrests(request):
-  """TODO"""
+  if request.method == 'POST':
+    event_id = request.POST.get('event_id', None)
+    intrest = request.POST.get('intrest_id',None)
+    if intrest is None or not event_id:
+      return HttpResponseBadRequest(simplejson.dumps({'error': 'Incomplete data'}))
+    try:
+      intrest_model = models.Intrests.objects.filter(id=intrest).get()
+    except models.Intrests.DoesNotExist:
+      return HttpResponseBadRequest(simplejson.dumps({'error': 'Intrest dose not exist'}))
+    try:
+      event_model = models.Event.objects.filter(id=event_id).get()
+    except models.Intrests.DoesNotExist:
+      return HttpResponseBadRequest(simplejson.dumps({'error': 'Event dose not exist'}))
+    try:
+      event_intrest = models.EventIntrests.objects.filter(event=event_model, intrest=intrest_model).get()
+      event_intrest.delete()
+    except models.EventIntrests.DoesNotExist:
+      event_intrest = models.EventIntrests(event=event_model,intrest=intrest_model)
+      event_intrest.save()
+    return HttpResponse(simplejson.dumps({'empty':'empty'}))
   return HttpResponseNotAllowed(['GET'])
 
 @permissions.is_logged_in
