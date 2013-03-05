@@ -461,7 +461,15 @@ def addLocalPlace(request):
 
 @permissions.is_logged_in
 def getLocalPlaceInfo(request):
-  """TODO"""
+  if request.method == 'POST':
+    id =  request.POST.get('id', None)
+    if not id:
+      return HttpResponseBadRequest(simplejson.dumps({'error': 'Incomplete data'}))
+    try:
+      place = models.LocalPlaces.objects.filter(id=id).get()
+      return HttpResponse(simplejson.dumps({'name':place.name,'description':place.description,'type':place.type,'lon':place.lon,'lat':place.lat,'address':place.address}))
+    except models.LocalPlaces.DoesNotExist:
+      return HttpResponseBadRequest(simplejson.dumps({'error': 'Object does not exists'}))
   return HttpResponseNotAllowed(['GET'])
 
 @permissions.is_logged_in

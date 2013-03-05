@@ -24,5 +24,6 @@ urlpatterns = patterns('',
   (r'^get_messages/$', 'api.views.getChatRoomMessage'),
   (r'^get_current_address/$', 'api.views.getCurrentAddress'),
   (r'^add_local_place/$', 'api.views.addLocalPlace'),
+  (r'^get_local_place/$', 'api.views.getLocalPlaceInfo'),
 
 )
