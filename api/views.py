@@ -395,17 +395,83 @@ def getChatRoomMessage(request):
 
 @permissions.is_logged_in
 def getEventInfo(request):
-  """TODO"""
+  if request.method == 'POST':
+    id =  request.POST.get('id', None)
+    token = request.POST.get('auth_token', None)
+    auth_token = models.TokenAuthModel.objects.filter(token=token).get()
+    if not id:
+      return HttpResponseBadRequest(simplejson.dumps({'error': 'Incomplete data'}))
+    try:
+      event = models.Event.objects.filter(id=id).get()
+      if event.creator_id != auth_token.user:
+        return HttpResponseBadRequest(simplejson.dumps({'error': 'Forbidden to edit'}))
+      return HttpResponse(simplejson.dumps({'name':event.name,'description':event.description,'price':event.price,'start_time':event.start_time,'end_time':event.end_time}))
+    except models.LocalPlaces.DoesNotExist:
+      return HttpResponseBadRequest(simplejson.dumps({'error': 'Object does not exists'}))
   return HttpResponseNotAllowed(['GET'])
 
 @permissions.is_logged_in
 def saveEventInfo(request):
-  """TODO"""
+  if request.method == 'POST':
+    name = request.POST.get('name',None)
+    description = request.POST.get('description',None)
+    start_time = request.POST.get('start_time',None)
+    end_time = request.POST.get('end_time', None)
+    price = request.POST.get('price', None)
+    id =  request.POST.get('id', None)
+    token = request.POST.get('auth_token', None)
+    auth_token = models.TokenAuthModel.objects.filter(token=token).get()
+    if not name or not description or not start_time or not end_time or not price:
+      return HttpResponseBadRequest(simplejson.dumps({'error': 'Incomplete data'}))
+    if not id:
+      event = models.Event(name=name,description=description,start_time=start_time,end_time=end_time, price=price, creator_id=auth_token.user)
+      event.save()
+      return HttpResponse(simplejson.dumps({'id':event.id}))
+    else:
+      try:
+        event = models.Event.objects.filter(id=id).get()
+        event.name = name
+        event.description = description
+        event.start_time = start_time
+        event.end_time = end_time
+        event.price = price
+        event.creator_id = auth_token.user
+        event.save()
+        return HttpResponse(simplejson.dumps({'id':event.id}))
+      except models.LocalPlaces.DoesNotExist:
+        return HttpResponseBadRequest(simplejson.dumps({'error': 'Object does not exists'}))
   return HttpResponseNotAllowed(['GET'])
 
 @permissions.is_logged_in
 def saveEventPlace(request):
-  """TODO"""
+  if request.method == 'POST':
+    name = request.POST.get('name',None)
+    description = request.POST.get('description',None)
+    start_time = request.POST.get('start_time',None)
+    end_time = request.POST.get('end_time', None)
+    price = request.POST.get('price', None)
+    id =  request.POST.get('id', None)
+    token = request.POST.get('auth_token', None)
+    auth_token = models.TokenAuthModel.objects.filter(token=token).get()
+    if not name or not description or not start_time or not end_time or not price:
+      return HttpResponseBadRequest(simplejson.dumps({'error': 'Incomplete data'}))
+    if not id:
+      event = models.Event(name=name,description=description,start_time=start_time,end_time=end_time, price=price, creator_id=auth_token.user)
+      event.save()
+      return HttpResponse(simplejson.dumps({'id':event.id}))
+    else:
+      try:
+        event = models.Event.objects.filter(id=id).get()
+        event.name = name
+        event.description = description
+        event.start_time = start_time
+        event.end_time = end_time
+        event.price = price
+        event.creator_id = auth_token.user
+        event.save()
+        return HttpResponse(simplejson.dumps({'id':event.id}))
+      except models.LocalPlaces.DoesNotExist:
+        return HttpResponseBadRequest(simplejson.dumps({'error': 'Object does not exists'}))
   return HttpResponseNotAllowed(['GET'])
 
 @permissions.is_logged_in

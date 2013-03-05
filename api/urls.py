@@ -25,5 +25,7 @@ urlpatterns = patterns('',
   (r'^get_current_address/$', 'api.views.getCurrentAddress'),
   (r'^add_local_place/$', 'api.views.addLocalPlace'),
   (r'^get_local_place/$', 'api.views.getLocalPlaceInfo'),
+  (r'^add_event_info/$', 'api.views.saveEventInfo'),
+  (r'^get_event_info/$', 'api.views.getEventInfo'),
 
 )
