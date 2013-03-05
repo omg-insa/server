@@ -277,6 +277,14 @@ def updatePasswordAfterRecovery(request):
       return HttpResponseBadRequest(simplejson.dumps({'error': 'Wrong data'}))
     return HttpResponse(simplejson.dumps({'empty':'empty'})) 
 
+def _getPlaceDetails(place_id):
+  if not place_id:
+    return None
+  url = 'https://maps.googleapis.com/maps/api/place/details/json?reference=' + place_id + '&sensor=false&key=AIzaSyDH-hG0w9pGBjGFBcpoNb25EDaG4P11zPI'
+  json = urllib2.urlopen(url).read()
+  data = simplejson.loads(json)
+  return data.result
+
 @permissions.is_logged_in
 def getPlaces(request):
   if request.method == 'POST':
