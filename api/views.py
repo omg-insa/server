@@ -289,7 +289,7 @@ def _getPlaceDetails(place_id):
 def getPlaces(request):
   if request.method == 'POST':
     places = _getPlaces(request)
-    return HttpResponse(simplejson.dumps(places))
+    return HttpResponse(simplejson.dumps({'list':places}))
   return HttpResponseNotAllowed(['GET'])
 
 def _getPlaces(request):
@@ -319,7 +319,7 @@ def getEvents(request):
     results = _getPlaces(request)
     places = [ result['id'] for result in results ]
     events = models.Event.objects.filter(place_id__in=places).all()
-    return HttpResponse(simplejson.dumps([ e for e in events ]))
+    return HttpResponse(simplejson.dumps({'list':[ e for e in events ]}))
   return HttpResponseNotAllowed(['GET'])
 
 @permissions.is_logged_in
@@ -397,7 +397,7 @@ def getChatRoomMessage(request):
     to_return = []
     for msg in messages:
       to_return.append({"date":msg.date.strftime("%d/%m/%y %H:%M:%S"),"message":msg.message,"user":msg.user.username})
-    return HttpResponse(simplejson.dumps(to_return))
+    return HttpResponse(simplejson.dumps({'list':to_return}))
   return HttpResponseNotAllowed(['GET'])
 
 
@@ -494,7 +494,7 @@ def getPersonalEvents(request):
         lon = place['geometry']['location']['lng']
         lat = place['geometry']['location']['lon']
       to_return.append({'id':event.id,'name':event.name,'description':event.description, 'start_time':event.start_time, 'end_time': event.end_time, 'lon':lon,'lat':lat})
-    return HttpResponseBadRequest(simplejson.dumps(to_return))
+    return HttpResponseBadRequest(simplejson.dumps({'list':to_return}))
   return HttpResponseNotAllowed(['GET'])
 
 def _convertToAddress(lon,lat):
