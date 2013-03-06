@@ -637,12 +637,12 @@ def closeEvent(request):
 def getStatus(request):
   if request.method == 'POST':
     event_id = request.POST.get('event_id',None)
-    token = request.POST.get('auth_token', None)
-    auth_token = models.TokenAuthModel.objects.filter(token=token).get()
     if not event_id:
       return HttpResponseBadRequest(simplejson.dumps({'error': 'Incomplete data'}))
     try:
       event = models.Event.objects.filter(id=event_id).get()
+      if event.status is None:
+        event.status = "Open"
       return HttpResponseBadRequest(simplejson.dumps({'status': event.status}))
     except models.LocalPlaces.DoesNotExist:
       return HttpResponseBadRequest(simplejson.dumps({'error': 'Object does not exists'}))
