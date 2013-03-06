@@ -667,3 +667,27 @@ def deleteEvent(request):
     except models.LocalPlaces.DoesNotExist:
       return HttpResponseBadRequest(simplejson.dumps({'error': 'Object does not exists'}))
   return HttpResponseNotAllowed(['GET'])
+
+@permissions.is_logged_in
+def checkin(request):
+  if request.method == 'POST':
+    token = request.POST.get('auth_token', None)
+    user = models.TokenAuthModel.objects.filter(token=token).get().user
+    event_id = request.POST.get('event_id', None)
+    event = models.Event.objects.filter(id=event_id)
+    subscription = models.Subscription(user=user, event=event, grade=None)
+    return HttpResponse(simplejson.dumps({'empty': 'empty'}))
+  return HttpResponseNotAllowed(['GET'])
+
+@permissions.is_logged_in
+def grade(request):
+  if request.method == 'POST':
+    token = request.POST.get('auth_token', None)
+    user = models.TokenAuthModel.objects.filter(token=token).get().user
+    event_id = request.POST.get('event_id', None)
+    event = models.Event.objects.filter(id=event_id)
+    grade = request.POST.get('grade', None)
+    subscription = models.Subscription.objects.filter(user=user, event=event).get()
+    subscription.grade = grade
+    return HttpResponse(simplejson.dumps({'empty': 'empty'}))
+  return HttpResponseNotAllowed(['GET'])
