@@ -126,7 +126,7 @@ def updateUserInfo(request):
       return HttpResponseBadRequest(simplejson.dumps({'error': 'Incomplete data'}))
     if not utils.validateEmail(email):
       return HttpResponseBadRequest(simplejson.dumps({'error': 'Invalid email'}))
-    if (users.count() == 1 and users.get() != user) or users.count()>1:
+    if (users.count() == 1 and users.get() != user) or users.count() > 1:
       return HttpResponseBadRequest(simplejson.dumps({'error': 'Email already used'}))
     try:
       personalInfo = models.ExtraInfoForUser.objects.filter(user=user).get()
@@ -289,7 +289,7 @@ def _getPlaceDetails(place_id):
 def getPlaces(request):
   if request.method == 'POST':
     places = _getPlaces(request)
-    return HttpResponse(simplejson.dumps({'list':places}))
+    return HttpResponse(simplejson.dumps({'list': places}))
   return HttpResponseNotAllowed(['GET'])
 
 def _getPlaces(request):
@@ -303,14 +303,14 @@ def _getPlaces(request):
   data = simplejson.loads(json)
   to_return = []
   for d in data['results']:
-    to_return.append({'id': d['reference'],'image_url':d['icon'], 'source': 'remote', 'type': d['types'][0], 'name': d['name'], 'description': '', 'address': d['vicinity'], 'lon': d['geometry']['location']['lng'], 'lat': d['geometry']['location']['lat']})
+    to_return.append({'id': d['reference'], 'image_url': d['icon'], 'source': 'remote', 'type': d['types'][0], 'name': d['name'], 'description': '', 'address': d['vicinity'], 'lon': d['geometry']['location']['lng'], 'lat': d['geometry']['location']['lat']})
   dist_range = float(radius) / 111322
   lat_range = (float(latitude)-dist_range, float(latitude)+dist_range)
   lon_range = (float(longitude)-dist_range, float(longitude)+dist_range)
   local_places = models.LocalPlaces.objects.filter(lat__range=lat_range)
   for obj in local_places:
     if float(obj.lon) >= lon_range[0] and float(obj.lon) <= lon_range[1]:
-      to_return.append({'id': obj.id,'image_url':'http://naperville-webdesign.net/wp-content/uploads/2012/12/home-icon-hi.png', 'source': 'local', 'type': obj.type, 'name': obj.name, 'description': obj.description, 'address': obj.address, 'lon': obj.lon, 'lat': obj.lat})
+      to_return.append({'id': obj.id, 'image_url': 'http://naperville-webdesign.net/wp-content/uploads/2012/12/home-icon-hi.png', 'source': 'local', 'type': obj.type, 'name': obj.name, 'description': obj.description, 'address': obj.address, 'lon': obj.lon, 'lat': obj.lat})
   return to_return
 
 @permissions.is_logged_in
@@ -319,7 +319,7 @@ def getEvents(request):
     results = _getPlaces(request)
     places = [ result['id'] for result in results ]
     events = models.Event.objects.filter(place_id__in=places).all()
-    return HttpResponse(simplejson.dumps({'list':[ e for e in events ]}))
+    return HttpResponse(simplejson.dumps({'list': [ e for e in events ]}))
   return HttpResponseNotAllowed(['GET'])
 
 @permissions.is_logged_in
@@ -396,8 +396,8 @@ def getChatRoomMessage(request):
     messages = models.EventChatRoom.objects.filter(event = event_models)
     to_return = []
     for msg in messages:
-      to_return.append({"date":msg.date.strftime("%d/%m/%y %H:%M:%S"),"message":msg.message,"user":msg.user.username})
-    return HttpResponse(simplejson.dumps({'list':to_return}))
+      to_return.append({'date': msg.date.strftime('%d/%m/%y %H:%M:%S'), 'message': msg.message, 'user': msg.user.username})
+    return HttpResponse(simplejson.dumps({'list': to_return}))
   return HttpResponseNotAllowed(['GET'])
 
 
@@ -503,9 +503,9 @@ def getPersonalEvents(request):
           lat = place['geometry']['location']['lon']
       except models.LocalPlaces.DoesNotExist:
         lon = lat = 0;
-      if lon > 0 and lat >0:
-        to_return.append({'id':event.id,'name':event.name,'description':event.description, 'start_time':event.start_time, 'end_time': event.end_time, 'lon':lon,'lat':lat})
-    return HttpResponseBadRequest(simplejson.dumps({'list':to_return}))
+      if lon > 0 and lat > 0:
+        to_return.append({'id': event.id, 'name': event.name, 'description': event.description, 'start_time': event.start_time, 'end_time': event.end_time, 'lon': lon, 'lat': lat})
+    return HttpResponseBadRequest(simplejson.dumps({'list': to_return}))
   return HttpResponseNotAllowed(['GET'])
 
 def _convertToAddress(lon, lat):
@@ -607,14 +607,14 @@ def getEventIntrests(request):
       isSelected = False
       if models.EventIntrests.objects.filter(event=event_model, intrest=i).count():
         isSelected = True
-      toReturn.append({'name': i.name, 'description':i.description, 'selected': isSelected, 'id':i.id})
-    return HttpResponse(simplejson.dumps({'list':toReturn}))
+      toReturn.append({'name': i.name, 'description': i.description, 'selected': isSelected, 'id': i.id})
+    return HttpResponse(simplejson.dumps({'list': toReturn}))
   return HttpResponseNotAllowed(['GET'])
 
 @permissions.is_logged_in
 def closeEvent(request):
   if request.method == 'POST':
-    event_id = request.POST.get('event_id',None)
+    event_id = request.POST.get('event_id', None)
     token = request.POST.get('auth_token', None)
     auth_token = models.TokenAuthModel.objects.filter(token=token).get()
     if not event_id:
@@ -624,7 +624,7 @@ def closeEvent(request):
       if event.creator_id != auth_token.user:
         return HttpResponseBadRequest(simplejson.dumps({'error': 'Forbidden to edit'}))
       if event.status == 'Closed':
-        event.status = ""
+        event.status = ''
       else:
         event.status = 'Closed'
       event.save()
@@ -636,7 +636,7 @@ def closeEvent(request):
 @permissions.is_logged_in
 def getStatus(request):
   if request.method == 'POST':
-    event_id = request.POST.get('event_id',None)
+    event_id = request.POST.get('event_id', None)
     if not event_id:
       return HttpResponseBadRequest(simplejson.dumps({'error': 'Incomplete data'}))
     try:
@@ -651,7 +651,7 @@ def getStatus(request):
 @permissions.is_logged_in
 def deleteEvent(request):
   if request.method == 'POST':
-    event_id = request.POST.get('event_id',None)
+    event_id = request.POST.get('event_id', None)
     token = request.POST.get('auth_token', None)
     auth_token = models.TokenAuthModel.objects.filter(token=token).get()
     if not event_id:
