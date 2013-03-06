@@ -680,6 +680,18 @@ def checkin(request):
   return HttpResponseNotAllowed(['GET'])
 
 @permissions.is_logged_in
+def checkout(request):
+  if request.method == 'POST':
+    token = request.POST.get('auth_token', None)
+    user = models.TokenAuthModel.objects.filter(token=token).get().user
+    event_id = request.POST.get('event_id', None)
+    event = models.Event.objects.filter(id=event_id)
+    subscription = models.Subscription.objects.filter(user=user, event=event).get()
+    subscription.delete()
+    return HttpResponse(simplejson.dumps({'empty': 'empty'}))
+  return HttpResponseNotAllowed(['GET'])
+
+@permissions.is_logged_in
 def grade(request):
   if request.method == 'POST':
     token = request.POST.get('auth_token', None)
