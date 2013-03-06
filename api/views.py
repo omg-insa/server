@@ -505,7 +505,7 @@ def getPersonalEvents(request):
         lon = lat = 0;
       if lon > 0 and lat > 0:
         to_return.append({'id': event.id, 'name': event.name, 'description': event.description, 'start_time': event.start_time, 'end_time': event.end_time, 'lon': lon, 'lat': lat})
-    return HttpResponseBadRequest(simplejson.dumps({'list': to_return}))
+    return HttpResponse(simplejson.dumps({'list': to_return}))
   return HttpResponseNotAllowed(['GET'])
 
 def _convertToAddress(lon, lat):
