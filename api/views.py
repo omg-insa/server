@@ -461,16 +461,20 @@ def saveEventPlace(request):
     auth_token = models.TokenAuthModel.objects.filter(token=token).get()
     if not place_id or not event_id or not place_type:
       return HttpResponseBadRequest(simplejson.dumps({'error': 'Incomplete data'}))
-    try:
-      place = models.LocalPlaces.objects.filter(id=place_id).get()
-    except models.LocalPlaces.DoesNotExist:
-      return HttpResponseBadRequest(simplejson.dumps({'error': 'Object does not exists'}))
+    if place_type:
+      try:
+        place = models.LocalPlaces.objects.filter(id=place_id).get()
+      except models.LocalPlaces.DoesNotExist:
+        return HttpResponseBadRequest(simplejson.dumps({'error': 'Object does not exists'}))
     try:
       event = models.Event.objects.filter(id=event_id).get()
       if event.creator_id != auth_token.user:
         return HttpResponseBadRequest(simplejson.dumps({'error': 'Forbidden to edit'}))
       event.local = place_type
-      event.place_id = place.id
+      if place_type:
+        event.place_id = place.id
+      else:
+        event.place_id = place_id
       event.save()
       return HttpResponseBadRequest(simplejson.dumps({'id': event.id}))
     except models.LocalPlaces.DoesNotExist:
@@ -619,8 +623,44 @@ def closeEvent(request):
       event = models.Event.objects.filter(id=event_id).get()
       if event.creator_id != auth_token.user:
         return HttpResponseBadRequest(simplejson.dumps({'error': 'Forbidden to edit'}))
-      event.status = 'Closed'
+      if event.status == 'Closed':
+        event.status = ""
+      else:
+        event.status = 'Closed'
       event.save()
+      return HttpResponseBadRequest(simplejson.dumps({'id': event.id}))
+    except models.LocalPlaces.DoesNotExist:
+      return HttpResponseBadRequest(simplejson.dumps({'error': 'Object does not exists'}))
+  return HttpResponseNotAllowed(['GET'])
+
+@permissions.is_logged_in
+def getStatus(request):
+  if request.method == 'POST':
+    event_id = request.POST.get('event_id',None)
+    token = request.POST.get('auth_token', None)
+    auth_token = models.TokenAuthModel.objects.filter(token=token).get()
+    if not event_id:
+      return HttpResponseBadRequest(simplejson.dumps({'error': 'Incomplete data'}))
+    try:
+      event = models.Event.objects.filter(id=event_id).get()
+      return HttpResponseBadRequest(simplejson.dumps({'status': event.status}))
+    except models.LocalPlaces.DoesNotExist:
+      return HttpResponseBadRequest(simplejson.dumps({'error': 'Object does not exists'}))
+  return HttpResponseNotAllowed(['GET'])
+
+@permissions.is_logged_in
+def deleteEvent(request):
+  if request.method == 'POST':
+    event_id = request.POST.get('event_id',None)
+    token = request.POST.get('auth_token', None)
+    auth_token = models.TokenAuthModel.objects.filter(token=token).get()
+    if not event_id:
+      return HttpResponseBadRequest(simplejson.dumps({'error': 'Incomplete data'}))
+    try:
+      event = models.Event.objects.filter(id=event_id).get()
+      if event.creator_id != auth_token.user:
+        return HttpResponseBadRequest(simplejson.dumps({'error': 'Forbidden to edit'}))
+      event.delete()
       return HttpResponseBadRequest(simplejson.dumps({'id': event.id}))
     except models.LocalPlaces.DoesNotExist:
       return HttpResponseBadRequest(simplejson.dumps({'error': 'Object does not exists'}))
