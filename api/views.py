@@ -456,12 +456,12 @@ def saveEventPlace(request):
   if request.method == 'POST':
     place_id = request.POST.get('place_id', None)
     event_id = request.POST.get('event_id', None)
-    place_type = request.POST.get('is_local', False)
+    is_local = request.POST.get('is_local', None)
     token = request.POST.get('auth_token', None)
     auth_token = models.TokenAuthModel.objects.filter(token=token).get()
-    if not place_id or not event_id or not place_type:
+    if not place_id or not event_id or not is_local:
       return HttpResponseBadRequest(simplejson.dumps({'error': 'Incomplete data'}))
-    if place_type:
+    if is_local == "True":
       try:
         place = models.LocalPlaces.objects.filter(id=place_id).get()
       except models.LocalPlaces.DoesNotExist:
@@ -470,8 +470,8 @@ def saveEventPlace(request):
       event = models.Event.objects.filter(id=event_id).get()
       if event.creator_id != auth_token.user:
         return HttpResponseBadRequest(simplejson.dumps({'error': 'Forbidden to edit'}))
-      event.local = place_type
-      if place_type:
+      event.local = is_local
+      if is_local == "True":
         event.place_id = place.id
       else:
         event.place_id = place_id
@@ -641,9 +641,11 @@ def getStatus(request):
       return HttpResponseBadRequest(simplejson.dumps({'error': 'Incomplete data'}))
     try:
       event = models.Event.objects.filter(id=event_id).get()
-      if event.status is None:
-        event.status = "Open"
-      return HttpResponseBadRequest(simplejson.dumps({'status': event.status}))
+      if event.status != "Closed":
+        status = "Open"
+      else:
+        status = event.status
+      return HttpResponseBadRequest(simplejson.dumps({'status': status}))
     except models.LocalPlaces.DoesNotExist:
       return HttpResponseBadRequest(simplejson.dumps({'error': 'Object does not exists'}))
   return HttpResponseNotAllowed(['GET'])
