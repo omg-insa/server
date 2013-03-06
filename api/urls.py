@@ -35,6 +35,7 @@ urlpatterns = patterns('',
   (r'^delete_event/$', 'api.views.deleteEvent'),
   (r'^get_event_status/$', 'api.views.getStatus'),
   (r'^checkin/$', 'api.views.checkin'),
+  (r'^checkout/$', 'api.views.checkin'),
   (r'^grade/$', 'api.views.grade'),
 
 )
