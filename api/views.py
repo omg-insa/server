@@ -283,7 +283,7 @@ def _getPlaceDetails(place_id):
   url = 'https://maps.googleapis.com/maps/api/place/details/json?reference=' + place_id + '&sensor=false&key=AIzaSyDH-hG0w9pGBjGFBcpoNb25EDaG4P11zPI'
   json = urllib2.urlopen(url).read()
   data = simplejson.loads(json)
-  return data.result
+  return data['result']
 
 @permissions.is_logged_in
 def getPlaces(request):
@@ -490,7 +490,7 @@ def getPersonalEvents(request):
     to_return = []
     for event in personalEvents:
       try:
-        if event.local:
+        if event.local == "True":
           if not event.place_id:
             lon=lat=0
           else:
@@ -498,9 +498,9 @@ def getPersonalEvents(request):
             lon = place.lon
             lat = place.lat
         else:
-          place = _getPlaceDetails(event.id)
+          place = _getPlaceDetails(event.place_id)
           lon = place['geometry']['location']['lng']
-          lat = place['geometry']['location']['lon']
+          lat = place['geometry']['location']['lat']
       except models.LocalPlaces.DoesNotExist:
         lon = lat = 0;
       if lon > 0 and lat > 0:
