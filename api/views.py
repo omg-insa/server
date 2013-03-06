@@ -499,6 +499,7 @@ def getPersonalEvents(request):
             lat = place.lat
         else:
           place = _getPlaceDetails(event.place_id)
+          logging.info('%s',place)
           lon = place['geometry']['location']['lng']
           lat = place['geometry']['location']['lat']
       except models.LocalPlaces.DoesNotExist:
