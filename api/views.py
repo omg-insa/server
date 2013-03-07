@@ -303,14 +303,14 @@ def _getPlaces(request):
   data = simplejson.loads(json)
   to_return = []
   for d in data['results']:
-    to_return.append({'id': d['reference'], 'image_url': d['icon'], 'source': 'remote', 'type': d['types'][0], 'name': d['name'], 'description': '', 'address': d['vicinity'], 'lon': d['geometry']['location']['lng'], 'lat': d['geometry']['location']['lat']})
+    to_return.append({'id': d['reference'], 'image_url': d['icon'], 'source': 'False', 'type': d['types'][0], 'name': d['name'], 'description': '', 'address': d['vicinity'], 'lon': d['geometry']['location']['lng'], 'lat': d['geometry']['location']['lat']})
   dist_range = float(radius) / 111322
   lat_range = (float(latitude)-dist_range, float(latitude)+dist_range)
   lon_range = (float(longitude)-dist_range, float(longitude)+dist_range)
   local_places = models.LocalPlaces.objects.filter(lat__range=lat_range)
   for obj in local_places:
     if float(obj.lon) >= lon_range[0] and float(obj.lon) <= lon_range[1]:
-      to_return.append({'id': obj.id, 'image_url': 'http://naperville-webdesign.net/wp-content/uploads/2012/12/home-icon-hi.png', 'source': 'local', 'type': obj.type, 'name': obj.name, 'description': obj.description, 'address': obj.address, 'lon': obj.lon, 'lat': obj.lat})
+      to_return.append({'id': obj.id, 'image_url': 'http://naperville-webdesign.net/wp-content/uploads/2012/12/home-icon-hi.png', 'source': 'True', 'type': obj.type, 'name': obj.name, 'description': obj.description, 'address': obj.address, 'lon': obj.lon, 'lat': obj.lat})
   return to_return
 
 @permissions.is_logged_in
