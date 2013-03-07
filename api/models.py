@@ -53,7 +53,7 @@ class ExtraInfoForUser(models.Model):
 
 class Event(models.Model):
   place_id = models.CharField(max_length=100)
-  local = models.BooleanField(default=True)
+  local = models.CharField(max_length=100)
   name = models.CharField(max_length=100)
   start_time = models.CharField(max_length=100)
   end_time = models.CharField(max_length=100)

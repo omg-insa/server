@@ -490,7 +490,7 @@ def getPersonalEvents(request):
     to_return = []
     for event in personalEvents:
       try:
-        if event.local == "True":
+        if event.local != "False":
           if not event.place_id:
             lon=lat=0
           else:
@@ -498,10 +498,14 @@ def getPersonalEvents(request):
             lon = place.lon
             lat = place.lat
         else:
-          place = _getPlaceDetails(event.place_id)
-          logging.info('%s',place)
-          lon = place['geometry']['location']['lng']
-          lat = place['geometry']['location']['lat']
+          if not event.place_id:
+            lon=lat=0
+          else:
+            logging.info('Place id %s:', event.place_id)
+            place = _getPlaceDetails(event.place_id)
+            logging.info('data :%s',place)
+            lon = place['geometry']['location']['lng']
+            lat = place['geometry']['location']['lat']
       except models.LocalPlaces.DoesNotExist:
         lon = lat = 0;
       if lon > 0 and lat > 0:
