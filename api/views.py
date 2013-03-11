@@ -444,7 +444,7 @@ def getFullEventInfo(request):
             lat = place_tmp.lat
             name =  place_tmp.name
             address = place_tmp.address
-            type = place.type
+            type = place_tmp.type
             place_description = place_tmp.description
         else:
           if not event.place_id:
@@ -457,7 +457,7 @@ def getFullEventInfo(request):
             place_description = place_tmp['description']
             lon = place_tmp['geometry']['location']['lng']
             lat = place_tmp['geometry']['location']['lat']
-            type = place['type'][0]
+            type = place_tmp['type'][0]
       except models.LocalPlaces.DoesNotExist:
         lon = lat = 0;
       if lon > 0 and lat > 0:
