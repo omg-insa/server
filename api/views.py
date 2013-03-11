@@ -784,9 +784,10 @@ def _recompute(event):
     event.age_average += now.year - year - (now.month < month or ( now.month == month and now.day < day ) )
     event.female_ratio += info.sex == "2"
     event.single_ratio += info.status == "2"
-  event.age_average /= event.headcount
-  event.female_ratio /= event.headcount
-  event.single_ratio /= event.headcount
+  if (event.headcount > 0):
+    event.age_average /= event.headcount
+    event.female_ratio /= event.headcount
+    event.single_ratio /= event.headcount
 
 @permissions.is_logged_in
 def star(request):
@@ -804,6 +805,6 @@ def star(request):
     for s in models.Subscription.objects.filter(event=event).all():
       total += s.stars
       count += 1
-    event.stars = total / count
+    event.stars = (total / count) if (count > 0) else 0
     return HttpResponse(simplejson.dumps({'empty': 'empty'}))
   return HttpResponseNotAllowed(['GET'])
