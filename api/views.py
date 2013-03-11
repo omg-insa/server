@@ -316,10 +316,36 @@ def _getPlaces(request):
 @permissions.is_logged_in
 def getEvents(request):
   if request.method == 'POST':
-    results = _getPlaces(request)
-    places = [ result['id'] for result in results ]
-    events = models.Event.objects.filter(place_id__in=places).all()
-    return HttpResponse(simplejson.dumps({'list': [ e.ToDict() for e in events ]}))
+    places = _getPlaces(request)
+    to_return = []
+    for place in places:
+      if place['source'] != "False":
+        events = models.Event.objects.filter(place_id=place['id']).all()
+      else:
+        events = models.Event.objects.filter(place_id=place['id']).all()
+      for event in events:
+        try:
+          if event.local != "False":
+            if not event.place_id:
+              lon=lat=0
+            else:
+              place_tmp = models.LocalPlaces.objects.filter(id=event.place_id).get()
+              lon = place_tmp.lon
+              lat = place_tmp.lat
+          else:
+            if not event.place_id:
+              lon=lat=0
+            else:
+              logging.info('Place id %s:', event.place_id)
+              place_tmp = _getPlaceDetails(event.place_id)
+              logging.info('data :%s',place)
+              lon = place_tmp['geometry']['location']['lng']
+              lat = place_tmp['geometry']['location']['lat']
+        except models.LocalPlaces.DoesNotExist:
+          lon = lat = 0;
+        if lon > 0 and lat > 0:
+          to_return.append({'id': event.id, 'name': event.name,'address':_convertToAddress(lon,lat), 'description': event.description, 'start_time': event.start_time, 'end_time': event.end_time, 'type': place['type'],'lon': lon, 'lat': lat})
+    return HttpResponse(simplejson.dumps({'list': to_return}))
   return HttpResponseNotAllowed(['GET'])
 
 @permissions.is_logged_in
