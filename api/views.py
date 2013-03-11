@@ -324,6 +324,12 @@ def getEvents(request):
       else:
         events = models.Event.objects.filter(place_id=place['id']).all()
       for event in events:
+        if status == "Closed":
+          continue
+        currentDate = datetime.datetime.now()
+        timeDelta = event.date - currentDate
+        if timeDelta.days > 1 or timesDelta.days < -1:
+          continue
         try:
           if event.local != "False":
             if not event.place_id:
@@ -501,7 +507,9 @@ def saveEventInfo(request):
     if not name or not description or not start_time or not end_time or not price:
       return HttpResponseBadRequest(simplejson.dumps({'error': 'Incomplete data'}))
     if not id:
-      event = models.Event(name=name, description=description, start_time=start_time, end_time=end_time, price=price, creator_id=auth_token.user)
+      event = models.Event(name=name, description=description,
+        date = datetime.datetime.now(),
+        start_time=start_time, end_time=end_time, price=price, creator_id=auth_token.user)
       event.save()
       return HttpResponse(simplejson.dumps({'id': event.id}))
     else:
@@ -510,6 +518,7 @@ def saveEventInfo(request):
         event.name = name
         event.description = description
         event.start_time = start_time
+        event.date = datetime.datetime.now()
         event.end_time = end_time
         event.price = price
         if event.creator_id != auth_token.user:
