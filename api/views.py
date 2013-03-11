@@ -430,6 +430,8 @@ def getChatRoomMessage(request):
 def getFullEventInfo(request):
   if request.method == 'POST':
     id =  request.POST.get('id', None)
+    if id is None:
+      return HttpResponseBadRequest(simplejson.dumps({'error': 'Incomplete data'}))
     try:
       event = models.Event.objects.filter(id=id).get()
       try:
@@ -442,6 +444,7 @@ def getFullEventInfo(request):
             lat = place_tmp.lat
             name =  place_tmp.name
             address = place_tmp.address
+            type = place.type
             place_description = place_tmp.description
         else:
           if not event.place_id:
@@ -454,12 +457,14 @@ def getFullEventInfo(request):
             place_description = place_tmp['description']
             lon = place_tmp['geometry']['location']['lng']
             lat = place_tmp['geometry']['location']['lat']
+            type = place['type'][0]
       except models.LocalPlaces.DoesNotExist:
         lon = lat = 0;
       if lon > 0 and lat > 0:
         myDict = {'name': event.name, 'close': event.status, 'description': event.description, 'price': event.price, 'start_time': event.start_time, 'end_time': event.end_time,
                   'age_average':event.age_average, 'female_ratio':event.female_ratio, 'grade':event.grade, 'single_ratio':event.single_ratio, 'headcount':event.headcount, 'lon':lon,
-                  'lat':lat,'place_name':name,'place_description':place_description,'place_address':address}
+                  'lat':lat,'place_name':name,'place_description':place_description,'place_address':address,
+                  'type':type}
         return HttpResponse(simplejson.dumps(myDict))
     except models.LocalPlaces.DoesNotExist:
       return HttpResponseBadRequest(simplejson.dumps({'error': 'Object does not exists'}))
