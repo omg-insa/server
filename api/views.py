@@ -763,7 +763,7 @@ def checkin(request):
     user = models.TokenAuthModel.objects.filter(token=token).get().user
     event_id = request.POST.get('event_id', None)
     event = models.Event.objects.filter(id=event_id).get()
-    subscription = models.Subscription(user=user, event=event, stars=None)
+    subscription = models.Subscription(user=user, event=event)
     subscription.save();
     _recompute(event)
     return HttpResponse(simplejson.dumps({'empty': 'empty'}))
