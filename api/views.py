@@ -820,6 +820,8 @@ def star(request):
     total = 0
     count = 0
     for s in models.Subscription.objects.filter(event=event).all():
+      if (not s.stars):
+        continue
       total += s.stars
       count += 1
     event.stars = (total / count) if (count > 0) else 0
