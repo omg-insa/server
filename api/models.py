@@ -49,7 +49,8 @@ class ExtraInfoForUser(models.Model):
   status = models.CharField(max_length=100)
 
 class Event(models.Model):
-  place_id = models.CharField(max_length=100)
+  place_id = models.CharField(max_length=1000)
+  reference = models.CharField(max_length=1000)
   local = models.CharField(max_length=100)
   name = models.CharField(max_length=100)
   date = models.DateField()

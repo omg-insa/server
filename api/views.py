@@ -10,6 +10,7 @@ from api import permissions
 import datetime
 import logging
 import urllib2
+import math
 
 __PlacesKey__ = 'AIzaSyBLHdzA-5F9DCllQbLmataclCyVp8MSXok'
 
@@ -299,20 +300,27 @@ def _getPlaces(request):
   longitude = request.POST.get('longitude', None)
   if not radius or not latitude or not longitude:
     return None
+  logging.info("Lon %s, Lat %s, Radious %s",longitude,latitude,radius)
   url = 'https://maps.googleapis.com/maps/api/place/search/json?location=' + latitude + ',' + longitude + '&radius=' + radius + '&types=bar|night_club&name=&sensor=false&key='+ __PlacesKey__
   json = urllib2.urlopen(url).read()
   data = simplejson.loads(json)
   logging.info("Google Places: %s",data)
   to_return = []
   for d in data['results']:
-    to_return.append({'id': d['reference'], 'image_url': d['icon'], 'source': 'False', 'type': d['types'][0], 'name': d['name'], 'description': '', 'address': d['vicinity'], 'lon': d['geometry']['location']['lng'], 'lat': d['geometry']['location']['lat']})
-  dist_range = float(radius) / 111322
-  lat_range = (float(latitude)-dist_range, float(latitude)+dist_range)
-  lon_range = (float(longitude)-dist_range, float(longitude)+dist_range)
+    to_return.append({'id': d['id'],'reference':d['reference'], 'image_url': d['icon'], 'source': 'False', 'type': d['types'][0], 'name': d['name'], 'description': '', 'address': d['vicinity'], 'lon': d['geometry']['location']['lng'], 'lat': d['geometry']['location']['lat']})
+  R=6378137.0
+  radius = (float)(radius) * 1.0
+  dLat = radius/R
+  lon_coef = math.pi*((float)(latitude))/180.0
+  lon_coef = math.cos(lon_coef)
+  dLon = radius/(R*lon_coef)
+  logging.info("%s %s",dLat,dLon)
+  lat_range = (float(latitude)-dLat * 180/math.pi, float(latitude)+dLat * 180/math.pi)
+  lon_range = (float(longitude)-dLon * 180/math.pi, float(longitude)+dLon * 180/math.pi)
   local_places = models.LocalPlaces.objects.filter(lat__range=lat_range)
   for obj in local_places:
     if float(obj.lon) >= lon_range[0] and float(obj.lon) <= lon_range[1]:
-      to_return.append({'id': obj.id, 'image_url': 'http://naperville-webdesign.net/wp-content/uploads/2012/12/home-icon-hi.png', 'source': 'True', 'type': obj.type, 'name': obj.name, 'description': obj.description, 'address': obj.address, 'lon': obj.lon, 'lat': obj.lat})
+      to_return.append({'id': obj.id, 'reference':obj.id,'image_url': 'http://naperville-webdesign.net/wp-content/uploads/2012/12/home-icon-hi.png', 'source': 'True', 'type': obj.type, 'name': obj.name, 'description': obj.description, 'address': obj.address, 'lon': obj.lon, 'lat': obj.lat})
   return to_return
 
 @permissions.is_logged_in
@@ -348,7 +356,7 @@ def getEvents(request):
               lon=lat=0
             else:
               logging.info('Place id %s:', event.place_id)
-              place_tmp = _getPlaceDetails(event.place_id)
+              place_tmp = _getPlaceDetails(event.reference)
               logging.info('data :%s',place)
               lon = place_tmp['geometry']['location']['lng']
               lat = place_tmp['geometry']['location']['lat']
@@ -462,12 +470,12 @@ def getFullEventInfo(request):
             lon=lat=0
           else:
             logging.info('Place id %s:', event.place_id)
-            place_tmp = _getPlaceDetails(event.place_id)
+            place_tmp = _getPlaceDetails(event.reference)
             name = place_tmp['name'];
-            address = place_tmp['address']
             place_description = place_tmp['description']
             lon = place_tmp['geometry']['location']['lng']
             lat = place_tmp['geometry']['location']['lat']
+            address = _convertToAddress(lon,lat)
             type = place_tmp['type'][0]
       except models.LocalPlaces.DoesNotExist:
         lon = lat = 0;
@@ -538,6 +546,7 @@ def saveEventInfo(request):
 def saveEventPlace(request):
   if request.method == 'POST':
     place_id = request.POST.get('place_id', None)
+    place_reference = request.POST.get('place_reference', None)
     event_id = request.POST.get('event_id', None)
     is_local = request.POST.get('is_local', None)
     token = request.POST.get('auth_token', None)
@@ -558,6 +567,7 @@ def saveEventPlace(request):
         event.place_id = place.id
       else:
         event.place_id = place_id
+        event.reference = place_reference
       event.save()
       return HttpResponseBadRequest(simplejson.dumps({'id': event.id}))
     except models.LocalPlaces.DoesNotExist:
@@ -585,7 +595,7 @@ def getPersonalEvents(request):
             lon=lat=0
           else:
             logging.info('Place id %s:', event.place_id)
-            place = _getPlaceDetails(event.place_id)
+            place = _getPlaceDetails(event.reference)
             logging.info('data :%s',place)
             lon = place['geometry']['location']['lng']
             lat = place['geometry']['location']['lat']
@@ -597,7 +607,7 @@ def getPersonalEvents(request):
   return HttpResponseNotAllowed(['GET'])
 
 def _convertToAddress(lon, lat):
-  url = 'http://maps.googleapis.com/maps/api/geocode/json?latlng='+lat+','+lon+'&sensor=false'
+  url = 'http://maps.googleapis.com/maps/api/geocode/json?latlng=%s,%s&sensor=false' % (lon,lat)
   json = urllib2.urlopen(url).read()
   data = simplejson.loads(json)
   return data['results'][0]['formatted_address']
