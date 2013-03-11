@@ -732,5 +732,12 @@ def grade(request):
     grade = request.POST.get('grade', None)
     subscription = models.Subscription.objects.filter(user=user, event=event).get()
     subscription.grade = grade
+    # recalculate event grade
+    total = 0
+    count = 0
+    for s in models.Subscription.objects.filter(event=event).all():
+      total += s.grade
+      count++
+    event.grade = total / count
     return HttpResponse(simplejson.dumps({'empty': 'empty'}))
   return HttpResponseNotAllowed(['GET'])
