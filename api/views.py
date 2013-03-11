@@ -11,6 +11,7 @@ import datetime
 import logging
 import urllib2
 
+__PlacesKey__ = 'AIzaSyBLHdzA-5F9DCllQbLmataclCyVp8MSXok'
 
 def login(request):
   """Login request"""
@@ -280,7 +281,7 @@ def updatePasswordAfterRecovery(request):
 def _getPlaceDetails(place_id):
   if not place_id:
     return None
-  url = 'https://maps.googleapis.com/maps/api/place/details/json?reference=' + place_id + '&sensor=false&key=AIzaSyDH-hG0w9pGBjGFBcpoNb25EDaG4P11zPI'
+  url = 'https://maps.googleapis.com/maps/api/place/details/json?reference=' + place_id + '&sensor=false&key='+__PlacesKey__
   json = urllib2.urlopen(url).read()
   data = simplejson.loads(json)
   return data['result']
@@ -298,9 +299,10 @@ def _getPlaces(request):
   longitude = request.POST.get('longitude', None)
   if not radius or not latitude or not longitude:
     return None
-  url = 'https://maps.googleapis.com/maps/api/place/search/json?location=' + latitude + ',' + longitude + '&radius=' + radius + '&types=bar|night_club&name=&sensor=false&key=AIzaSyDH-hG0w9pGBjGFBcpoNb25EDaG4P11zPI'
+  url = 'https://maps.googleapis.com/maps/api/place/search/json?location=' + latitude + ',' + longitude + '&radius=' + radius + '&types=bar|night_club&name=&sensor=false&key='+ __PlacesKey__
   json = urllib2.urlopen(url).read()
   data = simplejson.loads(json)
+  logging.info("Google Places: %s",data)
   to_return = []
   for d in data['results']:
     to_return.append({'id': d['reference'], 'image_url': d['icon'], 'source': 'False', 'type': d['types'][0], 'name': d['name'], 'description': '', 'address': d['vicinity'], 'lon': d['geometry']['location']['lng'], 'lat': d['geometry']['location']['lat']})
@@ -323,12 +325,15 @@ def getEvents(request):
         events = models.Event.objects.filter(place_id=place['id']).all()
       else:
         events = models.Event.objects.filter(place_id=place['id']).all()
+      logging.info("Events Count : %d %s", events.count(),place['id'])
       for event in events:
-        if status == "Closed":
+        if event.status == "Closed":
+          logging.info("Exited because event is closed")
           continue
         currentDate = datetime.datetime.now()
-        timeDelta = event.date - currentDate
-        if timeDelta.days > 1 or timesDelta.days < -1:
+        timeDelta = event.date.day - currentDate.day
+        if timeDelta > 1 or timeDelta < -1:
+          logging.info("Exited because event has not the good date")
           continue
         try:
           if event.local != "False":
@@ -806,7 +811,7 @@ def star(request):
     token = request.POST.get('auth_token', None)
     user = models.TokenAuthModel.objects.filter(token=token).get().user
     event_id = request.POST.get('event_id', None)
-    event = models.Event.objects.filter(id=event_id)
+    event = models.Event.objects.filter(id=event_id).get()
     stars = request.POST.get('stars', None)
     subscription = models.Subscription.objects.filter(user=user, event=event).get()
     subscription.stars = stars
