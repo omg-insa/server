@@ -745,6 +745,7 @@ def checkin(request):
     event_id = request.POST.get('event_id', None)
     event = models.Event.objects.filter(id=event_id)
     subscription = models.Subscription(user=user, event=event, grade=None)
+    _recompute(event)
     return HttpResponse(simplejson.dumps({'empty': 'empty'}))
   return HttpResponseNotAllowed(['GET'])
 
@@ -757,8 +758,28 @@ def checkout(request):
     event = models.Event.objects.filter(id=event_id)
     subscription = models.Subscription.objects.filter(user=user, event=event).get()
     subscription.delete()
+    _recompute(event)
     return HttpResponse(simplejson.dumps({'empty': 'empty'}))
   return HttpResponseNotAllowed(['GET'])
+
+def _recompute(event):
+  event.headcount = 0
+  event.age_average = 0
+  event.female_ratio = 0
+  event.single_ratio = 0
+  now = datetime.datetime.now()
+  for s in models.Subscription.objects.filter(event=event).all():
+    event.headcount += 1
+    info = models.ExtraInfoForUser.objects.filter(user=user)
+    year = int(info.birthday[:4])
+    month = int(info.birthday[4:6])
+    day = int(info.birthday[6:8])
+    event.age_average += now.year - year - (now.month < month or ( now.month == month and now.day < day ) )
+    event.female_ratio += info.sex == "2"
+    event.single_ratio += info.status == "2"
+  event.age_average /= event.headcount
+  event.female_ratio /= event.headcount
+  event.single_ratio /= event.headcount
 
 @permissions.is_logged_in
 def grade(request):

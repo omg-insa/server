@@ -33,14 +33,12 @@ class LocalPlaces(models.Model):
   address = models.CharField(max_length=1000)
   type = models.CharField(max_length=100)
 
-
 class TokenAuthModel(models.Model):
   """Auth token model for devices"""
   user = models.ForeignKey(User, related_name='token_username')
   device = models.ForeignKey(DeviceInfo, related_name='token_device_info')
   token = models.CharField(max_length=100)
   expiring_date = models.DateTimeField()
-
 
 class ExtraInfoForUser(models.Model):
   user = models.ForeignKey(User, related_name='user_value')
@@ -49,7 +47,6 @@ class ExtraInfoForUser(models.Model):
   secret_question  = models.CharField(max_length=100)
   secret_answer  = models.CharField(max_length=100)
   status = models.CharField(max_length=100)
-
 
 class Event(models.Model):
   place_id = models.CharField(max_length=100)
