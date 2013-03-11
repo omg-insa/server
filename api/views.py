@@ -426,6 +426,44 @@ def getChatRoomMessage(request):
     return HttpResponse(simplejson.dumps({'list': to_return}))
   return HttpResponseNotAllowed(['GET'])
 
+@permissions.is_logged_in
+def getFullEventInfo(request):
+  if request.method == 'POST':
+    id =  request.POST.get('id', None)
+    try:
+      event = models.Event.objects.filter(id=id).get()
+      try:
+        if event.local != "False":
+          if not event.place_id:
+            lon=lat=0
+          else:
+            place_tmp = models.LocalPlaces.objects.filter(id=event.place_id).get()
+            lon = place_tmp.lon
+            lat = place_tmp.lat
+            name =  place_tmp.name
+            address = place_tmp.address
+            place_description = place_tmp.description
+        else:
+          if not event.place_id:
+            lon=lat=0
+          else:
+            logging.info('Place id %s:', event.place_id)
+            place_tmp = _getPlaceDetails(event.place_id)
+            name = place_tmp['name'];
+            address = place_tmp['address']
+            place_description = place_tmp['description']
+            lon = place_tmp['geometry']['location']['lng']
+            lat = place_tmp['geometry']['location']['lat']
+      except models.LocalPlaces.DoesNotExist:
+        lon = lat = 0;
+      if lon > 0 and lat > 0:
+        myDict = {'name': event.name, 'close': event.status, 'description': event.description, 'price': event.price, 'start_time': event.start_time, 'end_time': event.end_time,
+                  'age_average':event.age_average, 'female_ratio':event.female_ratio, 'grade':event.grade, 'single_ratio':event.single_ratio, 'headcount':event.headcount, 'lon':lon,
+                  'lat':lat,'place_name':name,'place_description':place_description,'place_address':address}
+        return HttpResponse(simplejson.dumps(myDict))
+    except models.LocalPlaces.DoesNotExist:
+      return HttpResponseBadRequest(simplejson.dumps({'error': 'Object does not exists'}))
+  return HttpResponseNotAllowed(['GET'])
 
 @permissions.is_logged_in
 def getEventInfo(request):
@@ -737,7 +775,7 @@ def grade(request):
     count = 0
     for s in models.Subscription.objects.filter(event=event).all():
       total += s.grade
-      count++
+      count += 1
     event.grade = total / count
     return HttpResponse(simplejson.dumps({'empty': 'empty'}))
   return HttpResponseNotAllowed(['GET'])
