@@ -773,7 +773,7 @@ def checkin(request):
     user = models.TokenAuthModel.objects.filter(token=token).get().user
     event_id = request.POST.get('event_id', None)
     event = models.Event.objects.filter(id=event_id).get()
-    subscription = models.Subscription(user=user, event=event, stars=None)
+    subscription = models.Subscription(user=user, event=event)
     subscription.save();
     _recompute(event)
     return HttpResponse(simplejson.dumps({'empty': 'empty'}))
@@ -830,6 +830,8 @@ def star(request):
     total = 0
     count = 0
     for s in models.Subscription.objects.filter(event=event).all():
+      if (not s.stars):
+        continue
       total += s.stars
       count += 1
     event.stars = (total / count) if (count > 0) else 0
