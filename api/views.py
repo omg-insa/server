@@ -759,6 +759,7 @@ def checkin(request):
     event_id = request.POST.get('event_id', None)
     event = models.Event.objects.filter(id=event_id).get()
     subscription = models.Subscription(user=user, event=event, stars=None)
+    subscription.save();
     _recompute(event)
     return HttpResponse(simplejson.dumps({'empty': 'empty'}))
   return HttpResponseNotAllowed(['GET'])
@@ -797,6 +798,7 @@ def _recompute(event):
     event.age_average /= event.headcount
     event.female_ratio /= event.headcount
     event.single_ratio /= event.headcount
+  event.save()
 
 @permissions.is_logged_in
 def star(request):
@@ -808,6 +810,7 @@ def star(request):
     stars = request.POST.get('stars', None)
     subscription = models.Subscription.objects.filter(user=user, event=event).get()
     subscription.stars = stars
+    subscription.save()
     # recalculate event stars
     total = 0
     count = 0
@@ -815,5 +818,6 @@ def star(request):
       total += s.stars
       count += 1
     event.stars = (total / count) if (count > 0) else 0
+    event.save()
     return HttpResponse(simplejson.dumps({'empty': 'empty'}))
   return HttpResponseNotAllowed(['GET'])
