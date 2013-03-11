@@ -62,7 +62,7 @@ class Event(models.Model):
   single_ratio =  models.CharField(max_length=100)
   status =  models.CharField(max_length=100)
   creator_id =  models.ForeignKey(User, related_name='event_createor')
-  grade = models.CharField(max_length=100)
+  stars = models.CharField(max_length=100)
 
 class EventIntrests(models.Model):
   event = models.ForeignKey(Event, related_name='event_intrest_ev')
@@ -77,7 +77,7 @@ class EventChatRoom(models.Model):
 class Subscription(models.Model):
   user = models.ForeignKey(User, related_name='subscriber')
   event = models.ForeignKey(Event, related_name='subscribed')
-  grade = models.CharField(max_length=100)
+  stars = models.CharField(max_length=100)
 
 
 class ListModel(models.Model):

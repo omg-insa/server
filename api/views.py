@@ -462,7 +462,7 @@ def getFullEventInfo(request):
         lon = lat = 0;
       if lon > 0 and lat > 0:
         myDict = {'name': event.name, 'close': event.status, 'description': event.description, 'price': event.price, 'start_time': event.start_time, 'end_time': event.end_time,
-                  'age_average':event.age_average, 'female_ratio':event.female_ratio, 'grade':event.grade, 'single_ratio':event.single_ratio, 'headcount':event.headcount, 'lon':lon,
+                  'age_average':event.age_average, 'female_ratio':event.female_ratio, 'stars':event.stars, 'single_ratio':event.single_ratio, 'headcount':event.headcount, 'lon':lon,
                   'lat':lat,'place_name':name,'place_description':place_description,'place_address':address,
                   'type':type}
         return HttpResponse(simplejson.dumps(myDict))
@@ -749,7 +749,7 @@ def checkin(request):
     user = models.TokenAuthModel.objects.filter(token=token).get().user
     event_id = request.POST.get('event_id', None)
     event = models.Event.objects.filter(id=event_id).get()
-    subscription = models.Subscription(user=user, event=event, grade=None)
+    subscription = models.Subscription(user=user, event=event, stars=None)
     _recompute(event)
     return HttpResponse(simplejson.dumps({'empty': 'empty'}))
   return HttpResponseNotAllowed(['GET'])
@@ -789,21 +789,21 @@ def _recompute(event):
   event.single_ratio /= event.headcount
 
 @permissions.is_logged_in
-def grade(request):
+def star(request):
   if request.method == 'POST':
     token = request.POST.get('auth_token', None)
     user = models.TokenAuthModel.objects.filter(token=token).get().user
     event_id = request.POST.get('event_id', None)
     event = models.Event.objects.filter(id=event_id)
-    grade = request.POST.get('grade', None)
+    stars = request.POST.get('stars', None)
     subscription = models.Subscription.objects.filter(user=user, event=event).get()
-    subscription.grade = grade
-    # recalculate event grade
+    subscription.stars = stars
+    # recalculate event stars
     total = 0
     count = 0
     for s in models.Subscription.objects.filter(event=event).all():
-      total += s.grade
+      total += s.stars
       count += 1
-    event.grade = total / count
+    event.stars = total / count
     return HttpResponse(simplejson.dumps({'empty': 'empty'}))
   return HttpResponseNotAllowed(['GET'])
