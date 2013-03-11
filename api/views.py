@@ -748,7 +748,7 @@ def checkin(request):
     token = request.POST.get('auth_token', None)
     user = models.TokenAuthModel.objects.filter(token=token).get().user
     event_id = request.POST.get('event_id', None)
-    event = models.Event.objects.filter(id=event_id)
+    event = models.Event.objects.filter(id=event_id).get()
     subscription = models.Subscription(user=user, event=event, grade=None)
     _recompute(event)
     return HttpResponse(simplejson.dumps({'empty': 'empty'}))
@@ -760,7 +760,7 @@ def checkout(request):
     token = request.POST.get('auth_token', None)
     user = models.TokenAuthModel.objects.filter(token=token).get().user
     event_id = request.POST.get('event_id', None)
-    event = models.Event.objects.filter(id=event_id)
+    event = models.Event.objects.filter(id=event_id).get()
     subscription = models.Subscription.objects.filter(user=user, event=event).get()
     subscription.delete()
     _recompute(event)
