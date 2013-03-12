@@ -438,7 +438,7 @@ def getChatRoomMessage(request):
       event_models = models.Event.objects.filter(id=event).get()
     except models.Event.DoesNotExist:
       return HttpResponseBadRequest(simplejson.dumps({'error': 'Event dose not exist'}))
-    messages = models.EventChatRoom.objects.filter(event = event_models)
+    messages = models.EventChatRoom.objects.filter(event = event_models).order_by('-date')
     to_return = []
     for msg in messages:
       to_return.append({'date': msg.date.strftime('%d/%m/%y %H:%M:%S'), 'message': msg.message, 'user': msg.user.username})
@@ -471,12 +471,13 @@ def getFullEventInfo(request):
           else:
             logging.info('Place id %s:', event.place_id)
             place_tmp = _getPlaceDetails(event.reference)
-            name = place_tmp['name'];
-            place_description = place_tmp['description']
+            name = place_tmp['name']
+            place_description = ''
             lon = place_tmp['geometry']['location']['lng']
             lat = place_tmp['geometry']['location']['lat']
+            logging.info("Place details %s",place_tmp)
             address = _convertToAddress(lon,lat)
-            type = place_tmp['type'][0]
+            type = place_tmp['types'][0]
       except models.LocalPlaces.DoesNotExist:
         lon = lat = 0;
       if lon > 0 and lat > 0:
