@@ -6,6 +6,12 @@ indexes:
   - name: action_time
     direction: desc
 
+- kind: api_eventchatroom
+  properties:
+  - name: event_id
+  - name: date
+    direction: desc
+
 - kind: django_admin_log
   properties:
   - name: content_type_id
