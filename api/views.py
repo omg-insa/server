@@ -804,7 +804,7 @@ def _recompute(event):
   event.single_ratio = 0
   now = datetime.datetime.now()
   for s in models.Subscription.objects.filter(event=event).all():
-    info = models.ExtraInfoForUser.objects.filter(user=s.user)
+    info = models.ExtraInfoForUser.objects.filter(user=s.user).get()
     if (len(info.birthday) != 8):
       continue
     event.headcount += 1
