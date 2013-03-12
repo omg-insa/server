@@ -608,9 +608,10 @@ def getPersonalEvents(request):
   return HttpResponseNotAllowed(['GET'])
 
 def _convertToAddress(lon, lat):
-  url = 'http://maps.googleapis.com/maps/api/geocode/json?latlng=%s,%s&sensor=false' % (lon,lat)
+  url = 'http://maps.googleapis.com/maps/api/geocode/json?latlng=%s,%s&sensor=false' % (lat,lon)
   json = urllib2.urlopen(url).read()
   data = simplejson.loads(json)
+  logging.info("Address %s", data)
   return data['results'][0]['formatted_address']
 
 @permissions.is_logged_in
