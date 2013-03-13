@@ -482,7 +482,7 @@ def getFullEventInfo(request):
         lon = lat = 0;
       if lon > 0 and lat > 0:
         myDict = {'name': event.name, 'close': event.status, 'description': event.description, 'price': event.price, 'start_time': event.start_time, 'end_time': event.end_time,
-                  'age_average':event.age_average, 'female_ratio':event.female_ratio, 'stars':event.stars, 'single_ratio':event.single_ratio, 'headcount':event.headcount, 'lon':lon,
+                  'age_average':event.age_average, 'females':event.females, 'stars':event.stars, 'singles':event.singles, 'headcount':event.headcount, 'lon':lon,
                   'lat':lat,'place_name':name,'place_description':place_description,'place_address':address,
                   'type':type}
         return HttpResponse(simplejson.dumps(myDict))
@@ -800,8 +800,8 @@ def checkout(request):
 def _recompute(event):
   event.headcount = 0
   event.age_average = 0
-  event.female_ratio = 0
-  event.single_ratio = 0
+  event.females = 0
+  event.singles = 0
   now = datetime.datetime.now()
   for s in models.Subscription.objects.filter(event=event).all():
     info = models.ExtraInfoForUser.objects.filter(user=s.user).get()
@@ -812,12 +812,10 @@ def _recompute(event):
     month = int(info.birthday[4:6])
     day = int(info.birthday[6:8])
     event.age_average += now.year - year - (now.month < month or ( now.month == month and now.day < day ) )
-    event.female_ratio += info.sex == "2"
-    event.single_ratio += info.status == "2"
+    event.females += info.sex == "2"
+    event.singles += info.status == "2"
   if (event.headcount > 0):
     event.age_average /= event.headcount
-    event.female_ratio /= event.headcount
-    event.single_ratio /= event.headcount
   event.save()
 
 @permissions.is_logged_in
