@@ -10,10 +10,12 @@
 
 <!-- HaXx0r --> <br><br><br> <div align=center> <!-- /HaXx0r -->
 
-  <form class=active>
+  <form action=javascript:login() class=active>
+    <input type=text name=email title=email placeholder=email style=display:none> <br>
     <input type=text name=username title=username placeholder=username> <br>
     <input type=password name=password title=password placeholder=password> <br>
-    <input type=button value=login onclick=login()>
+    <input type=submit value=login id=login>
+    <input type=button value=register onclick=register()>
   </form>
 
   <form>
@@ -31,16 +33,26 @@
 </div>
 
 <script>
-  var auth_token = '', form = [], lat = 45.781874, lon = 4.873114, e = document.querySelector('#events'), pe = document.querySelector('#pevents');
+  var auth_token = '', form = [], lat = 45.781874, lon = 4.873114, timeout,
+      l = document.querySelector('#login'),
+      e = document.querySelector('#events'),
+      pe = document.querySelector('#pevents');
 
   navigator.geolocation.getCurrentPosition(function(pos) { lat = pos.coords.latitude, lon = pos.coords.longitude });
 
-  function login() { post(
-    '/api/login/',
+  function login() { timeout = setTimeout(loginfail, 1000), l.disabled = true, email = form[0].email.value, post(
+    email ? '/api/register/' : '/api/login/',
     'username=' + form[0].username.value + '&password=' + form[0].password.value +
-    '&device_type=rover&device_manufacture=nasa&device_os=vxworks&os_version=beta&device_id=curiosity',
-    function(data) { auth_token = data.auth_token, init() }
+    email ? '&email=' + email : '&device_type=rover&device_manufacture=nasa&device_os=vxworks&os_version=beta&device_id=curiosity',
+    function(data) {
+      clearTimeout(timeout);
+      if (email) form[0].email.value = '', login()
+      else auth_token = data.auth_token, init()
+    }
   )};
+
+  function loginfail() { l.disabled = false }
+  function register() { form[0].firstElementChild.style.display = 'inline-block'; form[0].lastElementChild.style.display = 'none'; l.value = 'submit' };
 
   function init() { hide(0), show(1), post(
     '/api/get_events/',
