@@ -6,5 +6,5 @@ urlpatterns = patterns('',
     ('^_ah/warmup$', 'djangoappengine.views.warmup'),
     (r'^api/*',include('api.urls')),
     ('^$', 'django.views.generic.simple.direct_to_template',
-     {'template': 'home.html'}),
+     {'template': 'index.html'}),
 )

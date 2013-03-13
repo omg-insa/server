@@ -1,0 +1,79 @@
+<!doctype html>
+<meta charset="utf-8">
+<title> Plan your Party </title>
+
+<style>
+  .active { display: block !important }
+  form { display: none }
+  section { width: 33%; float: left }
+</style>
+
+<!-- HaXx0r --> <br><br><br> <div align=center> <!-- /HaXx0r -->
+
+  <form class=active>
+    <input type=text name=username title=username placeholder=username> <br>
+    <input type=password name=password title=password placeholder=password> <br>
+    <input type=button value=login onclick=login()>
+  </form>
+
+  <form>
+    <section>
+     <p> Map? </p> 
+    </section>
+    <section>
+     <p> Events nearby </p>
+     <div id=events></div>
+    </section>
+    <section>
+     <p> Personal events </p> 
+     <div id=pevents></div>
+    </section>
+  </form>
+
+</div>
+
+<script>
+  var auth_token = '', form = [], lat = 45.781874, lon = 4.873114;
+
+  navigator.geolocation.getCurrentPosition(function(pos) { lat = pos.coords.latitude, lon = pos.coords.longitude });
+
+  function login() { post(
+    '/api/login/',
+    'username=' + form[0].username.value + '&password=' + form[0].password.value +
+    '&device_type=rover&device_manufacture=nasa&device_os=vxworks&os_version=beta&device_id=curiosity',
+    function(data) { auth_token = data.auth_token, init() }
+  )};
+
+  function init() { hide(0), show(1), post(
+    '/api/get_events/',
+    'auth_token=' + auth_token + '&radius=5000&latitude=' + lat + '&longitude=' + lon,
+    function(data) {
+      document.querySelector('#events').textContent = JSON.stringify(data, null, 2);
+    }
+  ), post(
+    '/api/get_personal_events/',
+    'auth_token=' + auth_token,
+    function(data) {
+      document.querySelector('#pevents').textContent = JSON.stringify(data, null, 2);
+    }
+  )};
+
+  for (var i = 0; i < document.forms.length; i++) form.push(document.forms[i]);
+
+  function show(i) { form[i].classList.add('active') };
+  function hide(i) { form[i].classList.remove('active') };
+
+  function post(address, data, callback) {
+    var xhr = new XMLHttpRequest();
+    xhr.open('POST', address, true);
+    xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+    xhr.setRequestHeader('Content-length', data.length);
+    xhr.setRequestHeader('Connection', 'close');
+    xhr.onreadystatechange = function() {
+      if(xhr.readyState === 4 && xhr.status === 200) callback(JSON.parse(xhr.responseText))
+      else alert('haha lol FAIL');
+    };
+    xhr.send(data);
+  };
+
+</script>
