@@ -41,9 +41,9 @@
   navigator.geolocation.getCurrentPosition(function(pos) { lat = pos.coords.latitude, lon = pos.coords.longitude });
 
   function login() { timeout = setTimeout(loginfail, 1000), l.disabled = true, email = form[0].email.value, post(
-    email ? '/api/register/' : '/api/login/',
+    (email ? '/api/register/' : '/api/login/'),
     'username=' + form[0].username.value + '&password=' + form[0].password.value +
-    email ? '&email=' + email : '&device_type=rover&device_manufacture=nasa&device_os=vxworks&os_version=beta&device_id=curiosity',
+    (email ? '&email=' + email : '&device_type=rover&device_manufacture=nasa&device_os=vxworks&os_version=beta&device_id=curiosity'),
     function(data) {
       clearTimeout(timeout);
       if (email) form[0].email.value = '', login()
