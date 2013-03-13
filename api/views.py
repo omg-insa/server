@@ -524,7 +524,7 @@ def saveEventInfo(request):
       event = models.Event(name=name, description=description,
         date = datetime.datetime.now(),
         start_time=start_time, end_time=end_time, price=price, creator_id=auth_token.user)
-      event.save()
+      _recompute(event)
       return HttpResponse(simplejson.dumps({'id': event.id}))
     else:
       try:
@@ -537,7 +537,7 @@ def saveEventInfo(request):
         event.price = price
         if event.creator_id != auth_token.user:
           return HttpResponseBadRequest(simplejson.dumps({'error': 'Forbidden to edit'}))
-        event.save()
+        _recompute(event)
         return HttpResponse(simplejson.dumps({'id': event.id}))
       except models.LocalPlaces.DoesNotExist:
         return HttpResponseBadRequest(simplejson.dumps({'error': 'Object does not exists'}))
@@ -569,7 +569,7 @@ def saveEventPlace(request):
       else:
         event.place_id = place_id
         event.reference = place_reference
-      event.save()
+      _recompute(event)
       return HttpResponseBadRequest(simplejson.dumps({'id': event.id}))
     except models.LocalPlaces.DoesNotExist:
       return HttpResponseBadRequest(simplejson.dumps({'error': 'Object does not exists'}))
@@ -727,7 +727,7 @@ def closeEvent(request):
         event.status = ''
       else:
         event.status = 'Closed'
-      event.save()
+      _recompute(event)
       return HttpResponseBadRequest(simplejson.dumps({'id': event.id}))
     except models.LocalPlaces.DoesNotExist:
       return HttpResponseBadRequest(simplejson.dumps({'error': 'Object does not exists'}))
