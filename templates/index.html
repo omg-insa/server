@@ -60,7 +60,9 @@
     function(data) {
       for (var i = 0; i < data.list; i++) {
         var article = document.createElement('article'), name = document.createElement('p'), address = document.createElement('p'), description = document.createElement('p');
-        name.textContent = data.list[i].name, description.textContent = data.list[i].description, address.textContent = data.list[i].address;
+        name.textContent = data.list[i].name,
+        address.textContent = data.list[i].address,
+        description.textContent = data.list[i].description;
         [name, address, description].forEach(article.appendChild.bind(article));
         e.appendChild(article);
       }
