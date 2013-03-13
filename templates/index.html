@@ -58,9 +58,9 @@
     '/api/get_events/',
     'auth_token=' + auth_token + '&radius=5000&latitude=' + lat + '&longitude=' + lon,
     function(data) {
-      for (var event in data.list) {
+      for (var i = 0; i < data.list; i++) {
         var article = document.createElement('article'), name = document.createElement('p'), address = document.createElement('p'), description = document.createElement('p');
-        name.textContent = event.name, description.textContent = event.description, address.textContent = event.address;
+        name.textContent = data.list[i].name, description.textContent = data.list[i].description, address.textContent = data.list[i].address;
         [name, address, description].forEach(article.appendChild.bind(article));
         e.appendChild(article);
       }
