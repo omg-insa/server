@@ -20,20 +20,18 @@
     <section>
      <p> Map? </p> 
     </section>
-    <section>
+    <section id=events>
      <p> Events nearby </p>
-     <div id=events></div>
     </section>
-    <section>
+    <section id=pevents>
      <p> Personal events </p> 
-     <div id=pevents></div>
     </section>
   </form>
 
 </div>
 
 <script>
-  var auth_token = '', form = [], lat = 45.781874, lon = 4.873114;
+  var auth_token = '', form = [], lat = 45.781874, lon = 4.873114, e = document.querySelector('#events'), pe = document.querySelector('#pevents');
 
   navigator.geolocation.getCurrentPosition(function(pos) { lat = pos.coords.latitude, lon = pos.coords.longitude });
 
@@ -48,7 +46,12 @@
     '/api/get_events/',
     'auth_token=' + auth_token + '&radius=5000&latitude=' + lat + '&longitude=' + lon,
     function(data) {
-      document.querySelector('#events').textContent = JSON.stringify(data, null, 2);
+      for (var event in data.list) {
+        var article = document.createElement('article'), name = document.createElement('p'), address = document.createElement('p'), description = document.createElement('p');
+        name.textContent = event.name, description.textContent = event.description, address.textContent = event.address;
+        [name, address, description].forEach(article.appendChild.bind(article));
+        e.appendChild(article);
+      }
     }
   ), post(
     '/api/get_personal_events/',
