@@ -110,6 +110,8 @@
 
   navigator.geolocation.getCurrentPosition(function(pos) { lat = pos.coords.latitude, lon = pos.coords.longitude });
 
+  for (var i = 0; i < document.forms.length; i++) form.push(document.forms[i]);
+
   if (document.cookie.indexOf('auth_token') > -1) auth_token = document.cookie.split(';')[0].split('=')[1].trim(), init();
 
   function login() { timeout = setTimeout(loginfail, 1000), l.disabled = true, email = form[0].email.value, post(
@@ -180,9 +182,6 @@
       mapTypeId: google.maps.MapTypeId.ROADMAP
     });
   };
-
-
-  for (var i = 0; i < document.forms.length; i++) form.push(document.forms[i]);
 
   function show(i) { form[i].classList.add('active') };
   function hide(i) { form[i].classList.remove('active') };
