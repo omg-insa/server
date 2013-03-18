@@ -330,15 +330,18 @@ def getEvents(request):
     intrest = request.POST.get('intrest', None)
     prix = request.POST.get('prix', None)
     time = request.POST.get('time', None)
+    logging.info("Get data: %s, %s %s",intrest,prix,time)
     to_return = []
     intrests_id = []
     if intrest:
+      token = request.POST.get('auth_token',None)
       auth_token = models.TokenAuthModel.objects.filter(token=token).get()
       user = auth_token.user
       intrests = models.UserIntrest.objects.filter(user = user)
       if intrests.count():
         for e in intrests:
-          intrests_id.append(e.id)
+          intrests_id.append(e.intrest.id)
+    logging.info("Look for intrests: %s", intrests_id)
     for place in places:
       if place['source'] != "False":
         events = models.Event.objects.filter(place_id=place['id']).all()
@@ -349,17 +352,18 @@ def getEvents(request):
         if event.status == "Closed":
           logging.info("Exited because event is closed")
           continue
-        if event.price > prix:
-          logging.info("Exited because of the price")
+        if prix  and (int)(event.price) > (int)(prix):
+          logging.info("Exited because of the price %s %s", prix, event.price)
           continue
-        if event.start_time > time:
-          logging.info("Exited because of the time")
+        if time and  event.start_time < time:
+          logging.info("Exited because of the time %s %s", time,event.start_time)
           continue
         if len(intrests_id):
           event_intrests = models.EventIntrests.objects.filter(event = event)
           ok = False
           for e in event_intrests:
-            if e.id in intrests_id:
+            logging.info("Found intrests: %s", e.intrest.id)
+            if e.intrest.id in intrests_id:
               ok = True
           if not ok:
             continue
