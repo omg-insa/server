@@ -142,6 +142,8 @@
 
   navigator.geolocation.getCurrentPosition(function(pos) { lat = pos.coords.latitude, lon = pos.coords.longitude });
 
+  if (document.cookie.indexOf('auth_token') > -1) auth_token = document.cookie.split(';')[0].split('=')[1].trim(), init();
+
   function login() { timeout = setTimeout(loginfail, 1000), l.disabled = true, email = form[0].email.value, post(
     (email ? '/api/register/' : '/api/login/'),
     'username=' + form[0].username.value + '&password=' + form[0].password.value +
@@ -149,7 +151,7 @@
     function(data) {
       clearTimeout(timeout);
       if (email) form[0].email.value = '', login()
-      else auth_token = data.auth_token, init()
+      else auth_token = data.auth_token, cookie(), init()
     }
   )};
 
@@ -182,8 +184,11 @@
     function(data) {
       document.querySelector('#pevents').textContent = JSON.stringify(data, null, 2);
     }
-  )
-};
+  )};
+
+  function cookie() {
+    document.cookie = 'auth_token=' + auth_token + '; expires=' + new Date(new Date().getTime() + 7*24*3600*1000).toGMTString() + '; path=/';
+  };
 
   function update() { post(
     '/api/update_user_info',
@@ -194,7 +199,7 @@
   )};
 
   function logout() {
-    // remove cookie?
+    document.cookie = 'auth_token=LOL; expires=Fri, 27 Jul 2001 02:47:11 UTC; path=/';
     document.location += '';
   };
 
