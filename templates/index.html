@@ -6,7 +6,7 @@
   .active { display: block !important }
   form { display: none }
   section { width: 33%; float: left }
-  #map-canvas { height: 400px; width: 90% }
+  #map-canvas { height: 400px; width: 500px }
 </style>
 
 <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/css/bootstrap-combined.min.css" rel="stylesheet">
@@ -142,13 +142,15 @@
         var table = document.createElement('table'); table.classList.add('table'); table.textContent = 'JER TRO LA FLEM'; d4.appendChild(table);
         d2.addEventListener('click', function() {collapse(i);});
         e.appendChild(d1);
-        new google.maps.Marker({
+        var lol = {
           map: map,
           draggable: false,
           animation: google.maps.Animation.DROP,
           position: google.maps.LatLng(data.list[i].lat, data.list[i].lon),
-          title: name.textContent
-        });
+          title: data.list[i].name
+        };
+        console.log(lol);
+        new google.maps.Marker(lol);
       }
     }
   ), post(
@@ -177,11 +179,13 @@
   };
 
   function initMap() {
-    map = new google.maps.Map(document.getElementById("map-canvas"), {
+	var mapOptions = {
       center: new google.maps.LatLng(lat, lon),
       zoom: 15,
       mapTypeId: google.maps.MapTypeId.ROADMAP
-    });
+    };
+
+    map = new google.maps.Map(document.getElementById("map-canvas"), mapOptions);
   };
 
   function show(i) { form[i].classList.add('active') };
