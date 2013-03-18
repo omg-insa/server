@@ -6,7 +6,7 @@
   .active { display: block !important }
   form { display: none }
   section { width: 33%; float: left }
-  #map-canvas { height: 400px; width: 400px }
+  #map-canvas { height: 400px; width: 90% }
 </style>
 
 <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/css/bootstrap-combined.min.css" rel="stylesheet">
@@ -99,7 +99,7 @@
 <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBLHdzA-5F9DCllQbLmataclCyVp8MSXok&sensor=true"></script>
 
 <script>
-  var auth_token = '', form = [], lat = 45.781874, lon = 4.873114, timeout,
+  var auth_token = '', form = [], lat = 45.781874, lon = 4.873114, timeout, map,
       l = document.querySelector('#login'),
       e = document.querySelector('#events'),
       pe = document.querySelector('#pevents');
@@ -131,6 +131,12 @@
         description.textContent = data.list[i].description;
         [name, address, description].forEach(article.appendChild.bind(article));
         e.appendChild(article);
+	  new google.maps.Marker({
+          map:map,
+          draggable:false,
+          animation: google.maps.Animation.DROP,
+          position: LatLng(data.list[i].lat, data.list[i].lon)
+        });
       }
     }
   ), post(
@@ -155,15 +161,13 @@
     document.location += '';
   };
 
-function initMap() {
-var mapOptions = {
-  center: new google.maps.LatLng(lat, lon),
-  zoom: 15,
-  mapTypeId: google.maps.MapTypeId.ROADMAP
-};
-var map = new google.maps.Map(document.getElementById("map-canvas"),
-    mapOptions);
-};
+  function initMap() {
+    map = new google.maps.Map(document.getElementById("map-canvas"), {
+      center: new google.maps.LatLng(lat, lon),
+      zoom: 15,
+      mapTypeId: google.maps.MapTypeId.ROADMAP
+    });
+  };
 
 
   for (var i = 0; i < document.forms.length; i++) form.push(document.forms[i]);
