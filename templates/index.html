@@ -6,6 +6,7 @@
   .active { display: block !important }
   form { display: none }
   section { width: 33%; float: left }
+  #map-canvas { height: 400px; width: 400px }
 </style>
 
 <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/css/bootstrap-combined.min.css" rel="stylesheet">
@@ -28,7 +29,7 @@
           <div class="nav-collapse collapse">
             <ul class="nav">
               <li class="active"> <a href=javascript:void(0)> Events </a>
-              <li> <a href=javascript:profile()> Profile </a>
+              <li> <a href=javascript:hide(1),show(2)> Profile </a>
               <li> <a href=javascript:logout()> Logout </a>
             </ul>
           </div>
@@ -37,7 +38,7 @@
     </div>
 
     <section>
-      <p> Map? </p>
+      <div id="map-canvas"/>
     </section>
 
     <section id=events>
@@ -62,9 +63,40 @@
     </section>
   </form>
 
+  <form action=javascript:update()>
+    <!-- argh bootstrap X( -->
+    <div class="navbar navbar-inverse navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <div class="nav-collapse collapse">
+            <ul class="nav">
+              <li> <a href=javascript:hide(2),show(1)> Events </a>
+              <li class="active"> <a href=javascript:void(0)> Profile </a>
+              <li> <a href=javascript:logout()> Logout </a>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+    <input type=text name=username title=username placeholder=username> <br>
+    <input type=text name=fullname title=fullname placeholder=fullname> <br>
+    <input type=text name=email title=email placeholder=email> <br>
+    <input type=date name=birthday title=birthday placeholder=email> <br>
+    <select name=sex title=sex title=sex>
+      <option value=1> man </option>
+      <option value=2> woman </option>
+    </select> <br>
+    <select name=status title=status title=status>
+      <option value=1> single </option>
+      <option value=2> with someone </option>
+    </select> <br>
+    <input type=submit value=submit class="btn btn-primary">
+  </form>
+
 </div>
 
 <script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBLHdzA-5F9DCllQbLmataclCyVp8MSXok&sensor=true"></script>
 
 <script>
   var auth_token = '', form = [], lat = 45.781874, lon = 4.873114, timeout,
@@ -88,7 +120,7 @@
   function loginfail() { l.disabled = false }
   function register() { form[0].firstElementChild.style.display = 'inline-block'; form[0].lastElementChild.style.display = 'none'; l.value = 'submit' };
 
-  function init() { hide(0), show(1), post(
+  function init() { hide(0), show(1), initMap(), post(
     '/api/get_events/',
     'auth_token=' + auth_token + '&radius=5000&latitude=' + lat + '&longitude=' + lon,
     function(data) {
@@ -107,16 +139,32 @@
     function(data) {
       document.querySelector('#pevents').textContent = JSON.stringify(data, null, 2);
     }
-  )};
+  )
+};
 
-  function profile() {
-    alert('your profile');
-  };
+  function update() { post(
+    '/api/update_user_info',
+    'auth_token=' + auth_token + '&full_name=' + form[2].fullname + '&email=' + form[2].email + '&birthday=' + form[2].birthday + '&sex=' + form[2].sex + '&status=' + form[2].status,
+    function(data) {
+      alert('oh yeah');
+    }
+  )};
 
   function logout() {
     // remove cookie?
     document.location += '';
   };
+
+function initMap() {
+var mapOptions = {
+  center: new google.maps.LatLng(lat, lon),
+  zoom: 15,
+  mapTypeId: google.maps.MapTypeId.ROADMAP
+};
+var map = new google.maps.Map(document.getElementById("map-canvas"),
+    mapOptions);
+};
+
 
   for (var i = 0; i < document.forms.length; i++) form.push(document.forms[i]);
 
