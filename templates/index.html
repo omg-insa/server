@@ -1,15 +1,16 @@
 <!doctype html>
 <meta charset="utf-8">
-<title> Plan your Party </title>
+<title> Share your Party </title>
 
 <style>
   .active { display: block !important }
   form { display: none }
   section { width: 33%; float: left }
-  #map-canvas { height: 400px; width: 90% }
+  #map-canvas { height: 400px; width: 500px }
 </style>
 
 <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/css/bootstrap-combined.min.css" rel="stylesheet">
+<link rel="stylesheet" href="style.css" />
 
 <!-- HaXx0r --> <br><br><br> <div align=center> <!-- /HaXx0r -->
 
@@ -135,19 +136,27 @@
 
       for (var i = 0; i < data.list.length; i++) {
         var d1 = document.createElement('div'); d1.classList.add('accordion-group');
-        var d2 = document.createElement('div'); d2.classList.add('accordion-heading'); d2.id = 'header' + i; d1.appendChild(d2); d2.textContent = data.list[i].name;
+        var d2 = document.createElement('div'); d2.classList.add('accordion-heading'); if (i < 1) d2.classList.add('activeEvent'); d2.id = 'header' + i; d1.appendChild(d2); d2.textContent = data.list[i].name;
         var d3 = document.createElement('div'); d3.classList.add('accordion-body'); d3.id = 'body' + i; d1.appendChild(d3);
         var d4 = document.createElement('div'); d4.classList.add('accordion-inner'); d1.appendChild(d4);
-        var table = document.createElement('table'); table.classList.add('table'); table.textContent = 'JER TRO LA FLEM'; d4.appendChild(table);
+        var table = document.createElement('table'); table.classList.add('table'); d4.appendChild(table);
+        [['Thème', 'theme'], ['Adresse', 'address'], ['Description', 'description']].forEach(function(s) {
+          var tr = document.createElement('tr');
+          var th = document.createElement('th'); tr.appendChild(th); th.textContent = s[0];
+          var td = document.createElement('td'); tr.appendChild(td); td.textContent = data.list[i][s[1]];
+          table.appendChild(tr);
+        });
         d2.addEventListener('click', function() {collapse(i);});
         e.appendChild(d1);
-        new google.maps.Marker({
+        var lol = {
           map: map,
           draggable: false,
           animation: google.maps.Animation.DROP,
           position: google.maps.LatLng(data.list[i].lat, data.list[i].lon),
-          title: name.textContent
-        });
+          title: data.list[i].name
+        };
+        console.log(lol);
+        new google.maps.Marker(lol);
       }
     }
   ), post(
@@ -176,11 +185,13 @@
   };
 
   function initMap() {
-    map = new google.maps.Map(document.getElementById("map-canvas"), {
+	var mapOptions = {
       center: new google.maps.LatLng(lat, lon),
       zoom: 15,
       mapTypeId: google.maps.MapTypeId.ROADMAP
-    });
+    };
+
+    map = new google.maps.Map(document.getElementById("map-canvas"), mapOptions);
   };
 
   function show(i) { form[i].classList.add('active') };
@@ -193,7 +204,7 @@
     xhr.onreadystatechange = function() {
       if(xhr.readyState === 4) {
         if (xhr.status === 200) callback(JSON.parse(xhr.responseText));
-        if (xhr.status === 400) alert(JSON.parse(xhr.responseText()).error);
+        if (xhr.status === 400) alert(JSON.parse(xhr.responseText).error);
       }
     };
     xhr.send(data);
@@ -201,6 +212,11 @@
 
   function collapse(i){
     $("#body"+i).slideToggle("slow");
+    var header = $("#header"+i);
+    if(header.hasClass("activeEvent"))
+      header.removeClass("activeEvent");
+    else  
+      header.addClass("activeEvent");
   };
 
 </script>
