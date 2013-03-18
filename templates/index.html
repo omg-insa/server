@@ -78,24 +78,8 @@
       <div id="map-canvas"/>
     </section>
 
-    <section id=events>
+    <section id=events class=accordion>
       <p> Events nearby </p>
-      <div id=accordion2 class=accordion>
-
-        <div class="accordion-group">
-          <div id="header1" class="accordion-heading"> <a href="javascript:void(0)" onclick="collapse(1)">Name Event</a> </div>
-          <div id="body1" class="accordion-body">
-            <div class="accordion-inner">
-              <table class="table">
-                <tr> <th>Theme</th> <td>Salsa</td> </tr>
-                <tr> <th>Time</th> <td>12h00-12h01</td> </tr>
-                <tr> <th>Place</th> <td>12 Avenue du Canal St Martin</td> </tr>
-              </table>
-            </div>
-          </div>
-        </div>
-
-      </div>
     </section>
 
     <section id=pevents>
@@ -188,7 +172,7 @@
           map: map,
           draggable: false,
           animation: google.maps.Animation.DROP,
-          position: google.maps.LatLng(data.list[i].lat, data.list[i].lon),
+          position: new google.maps.LatLng(data.list[i].lat, data.list[i].lon),
           title: data.list[i].name
         };
         console.log(lol);
