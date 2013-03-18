@@ -831,20 +831,26 @@ def _recompute(event):
   event.age_average = 0
   event.females = 0
   event.singles = 0
+  unknowns = 0;
   now = datetime.datetime.now()
   for s in models.Subscription.objects.filter(event=event).all():
-    info = models.ExtraInfoForUser.objects.filter(user=s.user).get()
-    if (len(info.birthday) != 8):
-      continue
-    event.headcount += 1
-    year = int(info.birthday[:4])
-    month = int(info.birthday[4:6])
-    day = int(info.birthday[6:8])
-    event.age_average += now.year - year - (now.month < month or ( now.month == month and now.day < day ) )
-    event.females += info.sex == "2"
-    event.singles += info.status == "2"
+    try:
+      info = models.ExtraInfoForUser.objects.filter(user=s.user).get()
+      if (len(info.birthday) != 8):
+        continue
+      event.headcount += 1
+      year = int(info.birthday[:4])
+      month = int(info.birthday[4:6])
+      day = int(info.birthday[6:8])
+      event.age_average += now.year - year - (now.month < month or ( now.month == month and now.day < day ) )
+      event.females += info.sex == "2"
+      event.singles += info.status == "2"
+    except models.ExtraInfoForUser.DoesNotExist:
+      logging.info('Extra info dose not exists')
+      unknowns += 1
   if (event.headcount > 0):
     event.age_average /= event.headcount
+  event.headcount += unknowns
   event.save()
 
 @permissions.is_logged_in

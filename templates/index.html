@@ -6,44 +6,43 @@
   .active { display: block !important }
   form { display: none }
   section { width: 33%; float: left }
-  #map-canvas { height: 400px; width: 90% }
 
   .accordion-heading
-{
-  background: rgb(14,14,14); /* Old browsers */
-  background: -moz-linear-gradient(top,  rgba(14,14,14,1) 0%, rgba(125,126,125,1) 100%); /* FF3.6+ */
-  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(14,14,14,1)), color-stop(100%,rgba(125,126,125,1))); /* Chrome,Safari4+ */
-  background: -webkit-linear-gradient(top,  rgba(14,14,14,1) 0%,rgba(125,126,125,1) 100%); /* Chrome10+,Safari5.1+ */
-  background: -o-linear-gradient(top,  rgba(14,14,14,1) 0%,rgba(125,126,125,1) 100%); /* Opera 11.10+ */
-  background: -ms-linear-gradient(top,  rgba(14,14,14,1) 0%,rgba(125,126,125,1) 100%); /* IE10+ */
-  background: linear-gradient(to bottom,  rgba(14,14,14,1) 0%,rgba(125,126,125,1) 100%); /* W3C */
-  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#0e0e0e', endColorstr='#7d7e7d',GradientType=0 ); /* IE6-9 */
-  color: #fff;
-}
+  {
+    background: rgb(14,14,14); /* Old browsers */
+    background: -moz-linear-gradient(top,  rgba(14,14,14,1) 0%, rgba(125,126,125,1) 100%); /* FF3.6+ */
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(14,14,14,1)), color-stop(100%,rgba(125,126,125,1))); /* Chrome,Safari4+ */
+    background: -webkit-linear-gradient(top,  rgba(14,14,14,1) 0%,rgba(125,126,125,1) 100%); /* Chrome10+,Safari5.1+ */
+    background: -o-linear-gradient(top,  rgba(14,14,14,1) 0%,rgba(125,126,125,1) 100%); /* Opera 11.10+ */
+    background: -ms-linear-gradient(top,  rgba(14,14,14,1) 0%,rgba(125,126,125,1) 100%); /* IE10+ */
+    background: linear-gradient(to bottom,  rgba(14,14,14,1) 0%,rgba(125,126,125,1) 100%); /* W3C */
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#0e0e0e', endColorstr='#7d7e7d',GradientType=0 ); /* IE6-9 */
+    color: #fff;
+  }
 
 .activeEvent
-{
-  color: #ffffff;
-  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
-  background-color: #006dcc;
-  background-image: -moz-linear-gradient(top, #0088cc, #0044cc);
-  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#0088cc), to(#0044cc));
-  background-image: -webkit-linear-gradient(top, #0088cc, #0044cc);
-  background-image: -o-linear-gradient(top, #0088cc, #0044cc);
-  background-image: linear-gradient(to bottom, #0088cc, #0044cc);
-  background-repeat: repeat-x;
-  border-color: #0044cc #0044cc #002a80;
-  border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
-  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff0088cc', endColorstr='#ff0044cc', GradientType=0);
-  filter: progid:DXImageTransform.Microsoft.gradient(enabled=false);
-}
+  {
+    color: #ffffff;
+    text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+    background-color: #006dcc;
+    background-image: -moz-linear-gradient(top, #0088cc, #0044cc);
+    background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#0088cc), to(#0044cc));
+    background-image: -webkit-linear-gradient(top, #0088cc, #0044cc);
+    background-image: -o-linear-gradient(top, #0088cc, #0044cc);
+    background-image: linear-gradient(to bottom, #0088cc, #0044cc);
+    background-repeat: repeat-x;
+    border-color: #0044cc #0044cc #002a80;
+    border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff0088cc', endColorstr='#ff0044cc', GradientType=0);
+    filter: progid:DXImageTransform.Microsoft.gradient(enabled=false);
+  }
 
-.accordion-heading a
-{
-  color: #fff;
-  text-decoration: none;
-}
-  
+  .accordion-heading a
+  {
+    color: #fff;
+    text-decoration: none;
+  }
+  #map-canvas { height: 400px; width: 500px }
 </style>
 
 <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/css/bootstrap-combined.min.css" rel="stylesheet">
@@ -177,7 +176,7 @@
         var d3 = document.createElement('div'); d3.classList.add('accordion-body'); d3.id = 'body' + i; d1.appendChild(d3);
         var d4 = document.createElement('div'); d4.classList.add('accordion-inner'); d1.appendChild(d4);
         var table = document.createElement('table'); table.classList.add('table'); d4.appendChild(table);
-        [['Thème', 'theme'], ['Adresse', 'address'], ['Description', 'description']].forEach(function(s) {
+        [['Theme', 'theme'], ['Place', 'address'], ['More info', 'description']].forEach(function(s) {
           var tr = document.createElement('tr');
           var th = document.createElement('th'); tr.appendChild(th); th.textContent = s[0];
           var td = document.createElement('td'); tr.appendChild(td); td.textContent = data.list[i][s[1]];
@@ -185,13 +184,15 @@
         });
         d2.addEventListener('click', function() {collapse(i);});
         e.appendChild(d1);
-        new google.maps.Marker({
+        var lol = {
           map: map,
           draggable: false,
           animation: google.maps.Animation.DROP,
           position: google.maps.LatLng(data.list[i].lat, data.list[i].lon),
-          title: name.textContent
-        });
+          title: data.list[i].name
+        };
+        console.log(lol);
+        new google.maps.Marker(lol);
       }
     }
   ), post(
@@ -220,11 +221,13 @@
   };
 
   function initMap() {
-    map = new google.maps.Map(document.getElementById("map-canvas"), {
+	var mapOptions = {
       center: new google.maps.LatLng(lat, lon),
       zoom: 15,
       mapTypeId: google.maps.MapTypeId.ROADMAP
-    });
+    };
+
+    map = new google.maps.Map(document.getElementById("map-canvas"), mapOptions);
   };
 
   function show(i) { form[i].classList.add('active') };
