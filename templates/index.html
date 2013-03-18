@@ -29,7 +29,7 @@
           <div class="nav-collapse collapse">
             <ul class="nav">
               <li class="active"> <a href=javascript:void(0)> Events </a>
-              <li> <a href=javascript:profile()> Profile </a>
+              <li> <a href=javascript:hide(1),show(2)> Profile </a>
               <li> <a href=javascript:logout()> Logout </a>
             </ul>
           </div>
@@ -61,6 +61,36 @@
     <section id=pevents>
       <p> Personal events </p>
     </section>
+  </form>
+
+  <form action=javascript:update()>
+    <!-- argh bootstrap X( -->
+    <div class="navbar navbar-inverse navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <div class="nav-collapse collapse">
+            <ul class="nav">
+              <li> <a href=javascript:hide(2),show(1)> Events </a>
+              <li class="active"> <a href=javascript:void(0)> Profile </a>
+              <li> <a href=javascript:logout()> Logout </a>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+    <input type=text name=username title=username placeholder=username>
+    <input type=text name=fullname title=fullname placeholder=fullname>
+    <input type=text name=email title=email placeholder=email>
+    <input type=date name=birthday title=birthday placeholder=email>
+    <select name=sex title=sex title=sex>
+      <option value=1> man </option>
+      <option value=2> woman </option>
+    </select>
+    <select name=status title=status title=status>
+      <option value=1> single </option>
+      <option value=2> with someone </option>
+    </select>
+    <input type=submit value=submit>
   </form>
 
 </div>
@@ -112,9 +142,13 @@
   )
 };
 
-  function profile() {
-    alert('your profile');
-  };
+  function update() { post(
+    '/api/update_user_info',
+    'auth_token=' + auth_token + '&full_name=' + form[2].fullname + '&email=' + form[2].email + '&birthday=' + form[2].birthday + '&sex=' + form[2].sex + '&status=' + form[2].status,
+    function(data) {
+      alert('oh yeah');
+    }
+  )};
 
   function logout() {
     // remove cookie?
