@@ -27,8 +27,9 @@
         <div class="container">
           <div class="nav-collapse collapse">
             <ul class="nav">
-              <li class="active"> <a href=#> Events </a> </li>
-              <li> <a href=#> Profile </a> </li>
+              <li class="active"> <a href=javascript:void(0)> Events </a>
+              <li> <a href=javascript:profile()> Profile </a>
+              <li> <a href=javascript:logout()> Logout </a>
             </ul>
           </div>
         </div>
@@ -107,6 +108,15 @@
       document.querySelector('#pevents').textContent = JSON.stringify(data, null, 2);
     }
   )};
+
+  function profile() {
+    alert('your profile');
+  };
+
+  function logout() {
+    // remove cookie?
+    document.location += '';
+  };
 
   for (var i = 0; i < document.forms.length; i++) form.push(document.forms[i]);
 
