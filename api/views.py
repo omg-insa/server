@@ -331,6 +331,14 @@ def getEvents(request):
     prix = request.POST.get('prix', None)
     time = request.POST.get('time', None)
     to_return = []
+    intrests_id = []
+    if intrest:
+      auth_token = models.TokenAuthModel.objects.filter(token=token).get()
+      user = auth_token.user
+      intrests = models.UserIntrest.objects.filter(user = user)
+      if intrests.count():
+        for e in intrests:
+          intrests_id.append(e.id)
     for place in places:
       if place['source'] != "False":
         events = models.Event.objects.filter(place_id=place['id']).all()
@@ -341,6 +349,20 @@ def getEvents(request):
         if event.status == "Closed":
           logging.info("Exited because event is closed")
           continue
+        if event.price > prix:
+          logging.info("Exited because of the price")
+          continue
+        if event.start_time > time:
+          logging.info("Exited because of the time")
+          continue
+        if len(intrests_id):
+          event_intrests = models.EventIntrests.objects.filter(event = event)
+          ok = False
+          for e in event_intrests:
+            if e.id in intrests_id:
+              ok = True
+          if not ok:
+            continue
         currentDate = datetime.datetime.now()
         timeDelta = event.date.day - currentDate.day
         if timeDelta > 1 or timeDelta < -1:
