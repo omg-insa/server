@@ -140,7 +140,7 @@
         var d3 = document.createElement('div'); d3.classList.add('accordion-body'); d3.id = 'body' + i; d1.appendChild(d3);
         var d4 = document.createElement('div'); d4.classList.add('accordion-inner'); d1.appendChild(d4);
         var table = document.createElement('table'); table.classList.add('table'); d4.appendChild(table);
-        [['Thème', 'theme'], ['Adresse', 'address'], ['Description', 'description']].forEach(function(s) {
+        [['Theme', 'theme'], ['Place', 'address'], ['More info', 'description']].forEach(function(s) {
           var tr = document.createElement('tr');
           var th = document.createElement('th'); tr.appendChild(th); th.textContent = s[0];
           var td = document.createElement('td'); tr.appendChild(td); td.textContent = data.list[i][s[1]];
