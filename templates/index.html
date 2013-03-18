@@ -46,12 +46,47 @@
       <div class="accordion" id="accordion2">
        <div class="accordion-group">
         <div class="accordion-heading">
-         <p>Collapsible Group Item #2</p>
+         <a href="javascript:void(0)" onclick="collapse(1)">Name Event</a>
         </div>
-        <div id="collapseTwo" class="accordion-body">
+        <div id="body1" class="accordion-body">
          <div class="accordion-inner">
-           <table class="table table-hover">
-	   </table>
+           <table class="table">
+        		<tr>
+        		  <th>Theme</th>
+        		  <td>Salsa</td>
+        		</tr>
+        		<tr>
+        		  <th>Time</th>
+        		  <td>12h00-12h01</td>
+        		<tr>
+            <tr>
+              <th>Place</th>
+              <td>12 Avenue du Canal St Martin</td>
+            <tr>
+	         </table>
+         </div>
+        </div>
+      </div>
+      <div class="accordion-group">
+        <div class="accordion-heading">
+         <a href="javascript:void(0)" onclick="collapse(2)">Name Event</a>
+        </div>
+        <div id="body2" class="accordion-body collapse">
+         <div class="accordion-inner">
+           <table class="table">
+            <tr>
+              <th>Theme</th>
+              <td>Salsa</td>
+            </tr>
+            <tr>
+              <th>Time</th>
+              <td>12h00-12h01</td>
+            <tr>
+            <tr>
+              <th>Place</th>
+              <td>12 Avenue du Canal St Martin</td>
+            <tr>
+           </table>
          </div>
         </div>
        </div>
@@ -95,6 +130,7 @@
 
 </div>
 
+<script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
 <script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/js/bootstrap.min.js"></script>
 <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBLHdzA-5F9DCllQbLmataclCyVp8MSXok&sensor=true"></script>
 
@@ -184,6 +220,10 @@
       if(xhr.readyState === 4 && xhr.status === 200) callback(JSON.parse(xhr.responseText))
     };
     xhr.send(data);
+  };
+
+  function collapse(i){
+    $("#body"+i).slideToggle("slow");
   };
 
 </script>
