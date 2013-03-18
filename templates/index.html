@@ -135,7 +135,8 @@
           map:map,
           draggable:false,
           animation: google.maps.Animation.DROP,
-          position: LatLng(data.list[i].lat, data.list[i].lon)
+          position: google.maps.LatLng(data.list[i].lat, data.list[i].lon),
+          title: name.textContent
         });
       }
     }
