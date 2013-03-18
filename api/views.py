@@ -340,7 +340,8 @@ def getEvents(request):
       intrests = models.UserIntrest.objects.filter(user = user)
       if intrests.count():
         for e in intrests:
-          intrests_id.append(e.id)
+          intrests_id.append(e.intrest.id)
+    logging.info("Look for intrests: %s", intrests_id)
     for place in places:
       if place['source'] != "False":
         events = models.Event.objects.filter(place_id=place['id']).all()
@@ -361,7 +362,8 @@ def getEvents(request):
           event_intrests = models.EventIntrests.objects.filter(event = event)
           ok = False
           for e in event_intrests:
-            if e.id in intrests_id:
+            logging.info("Found intrests: %s", e.intrest.id)
+            if e.intrest.id in intrests_id:
               ok = True
           if not ok:
             continue
