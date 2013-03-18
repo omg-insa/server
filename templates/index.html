@@ -6,9 +6,7 @@
   .active { display: block !important }
   form { display: none }
   section { width: 33%; float: left }
-
-  .accordion-heading
-  {
+  .accordion-heading {
     background: rgb(14,14,14); /* Old browsers */
     background: -moz-linear-gradient(top,  rgba(14,14,14,1) 0%, rgba(125,126,125,1) 100%); /* FF3.6+ */
     background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(14,14,14,1)), color-stop(100%,rgba(125,126,125,1))); /* Chrome,Safari4+ */
@@ -19,9 +17,7 @@
     filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#0e0e0e', endColorstr='#7d7e7d',GradientType=0 ); /* IE6-9 */
     color: #fff;
   }
-
-  .activeEvent
-  {
+  .activeEvent {
     color: #ffffff;
     text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
     background-color: #006dcc;
@@ -36,12 +32,7 @@
     filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff0088cc', endColorstr='#ff0044cc', GradientType=0);
     filter: progid:DXImageTransform.Microsoft.gradient(enabled=false);
   }
-
-  .accordion-heading a
-  {
-    color: #fff;
-    text-decoration: none;
-  }
+  .accordion-heading a { color: #fff; text-decoration: none; }
   #map-canvas { height: 400px; width: 500px }
 </style>
 
@@ -160,7 +151,7 @@
         var d4 = document.createElement('div'); d4.classList.add('accordion-inner'); d1.appendChild(d4);
         var table = document.createElement('table'); table.classList.add('table'); d4.appendChild(table);
         [['Place', 'address'], ['About', 'description']].forEach(function(s) {
-          if (!s[1]) continue;
+          if (!(data.list[i][s[1]])) return;
           var tr = document.createElement('tr');
           var th = document.createElement('th'); tr.appendChild(th); th.textContent = s[0];
           var td = document.createElement('td'); tr.appendChild(td); td.textContent = data.list[i][s[1]];
@@ -210,7 +201,6 @@
       zoom: 15,
       mapTypeId: google.maps.MapTypeId.ROADMAP
     };
-
     map = new google.maps.Map(document.getElementById("map-canvas"), mapOptions);
   };
 
