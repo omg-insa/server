@@ -8,14 +8,16 @@
   section { width: 33%; float: left }
 </style>
 
+<link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/css/bootstrap-combined.min.css" rel="stylesheet">
+
 <!-- HaXx0r --> <br><br><br> <div align=center> <!-- /HaXx0r -->
 
   <form action=javascript:login() class=active>
     <input type=text name=email title=email placeholder=email style=display:none> <br>
     <input type=text name=username title=username placeholder=username> <br>
     <input type=password name=password title=password placeholder=password> <br>
-    <input type=submit value=login id=login>
-    <input type=button value=register onclick=register()>
+    <input type=submit class="btn btn-primary" value=login id=login>
+    <input type=button class=btn value=register onclick=register()>
   </form>
 
   <form>
@@ -31,6 +33,8 @@
   </form>
 
 </div>
+
+<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/js/bootstrap.min.js"></script>
 
 <script>
   var auth_token = '', form = [], lat = 45.781874, lon = 4.873114, timeout,
