@@ -553,21 +553,20 @@ def saveEventInfo(request):
       event = models.Event(name=name, description=description,
         date = datetime.datetime.now(),
         start_time=start_time, end_time=end_time, price=price, creator_id=auth_token.user)
-      event.save()
       _recompute(event)
       return HttpResponse(simplejson.dumps({'id': event.id}))
     else:
       try:
         event = models.Event.objects.filter(id=id).get()
-        if event.creator_id != auth_token.user:
-          return HttpResponseBadRequest(simplejson.dumps({'error': 'Forbidden to edit'}))
         event.name = name
         event.description = description
         event.start_time = start_time
         event.date = datetime.datetime.now()
         event.end_time = end_time
         event.price = price
-        event.save()
+        if event.creator_id != auth_token.user:
+          return HttpResponseBadRequest(simplejson.dumps({'error': 'Forbidden to edit'}))
+        _recompute(event)
         return HttpResponse(simplejson.dumps({'id': event.id}))
       except models.LocalPlaces.DoesNotExist:
         return HttpResponseBadRequest(simplejson.dumps({'error': 'Object does not exists'}))
@@ -599,7 +598,7 @@ def saveEventPlace(request):
       else:
         event.place_id = place_id
         event.reference = place_reference
-      event.save()
+      _recompute(event)
       return HttpResponseBadRequest(simplejson.dumps({'id': event.id}))
     except models.LocalPlaces.DoesNotExist:
       return HttpResponseBadRequest(simplejson.dumps({'error': 'Object does not exists'}))
@@ -757,7 +756,7 @@ def closeEvent(request):
         event.status = ''
       else:
         event.status = 'Closed'
-      event.save()
+      _recompute(event)
       return HttpResponseBadRequest(simplejson.dumps({'id': event.id}))
     except models.LocalPlaces.DoesNotExist:
       return HttpResponseBadRequest(simplejson.dumps({'error': 'Object does not exists'}))
@@ -832,20 +831,26 @@ def _recompute(event):
   event.age_average = 0
   event.females = 0
   event.singles = 0
+  unknowns = 0;
   now = datetime.datetime.now()
   for s in models.Subscription.objects.filter(event=event).all():
-    info = models.ExtraInfoForUser.objects.filter(user=s.user).get()
-    if (len(info.birthday) != 8):
-      continue
-    event.headcount += 1
-    year = int(info.birthday[:4])
-    month = int(info.birthday[4:6])
-    day = int(info.birthday[6:8])
-    event.age_average += now.year - year - (now.month < month or ( now.month == month and now.day < day ) )
-    event.females += info.sex == "2"
-    event.singles += info.status == "2"
+    try:
+      info = models.ExtraInfoForUser.objects.filter(user=s.user).get()
+      if (len(info.birthday) != 8):
+        continue
+      event.headcount += 1
+      year = int(info.birthday[:4])
+      month = int(info.birthday[4:6])
+      day = int(info.birthday[6:8])
+      event.age_average += now.year - year - (now.month < month or ( now.month == month and now.day < day ) )
+      event.females += info.sex == "2"
+      event.singles += info.status == "2"
+    except models.ExtraInfoForUser.DoesNotExist:
+      logging.info('Extra info dose not exists')
+      unknowns += 1
   if (event.headcount > 0):
     event.age_average /= event.headcount
+  event.headcount += unknowns
   event.save()
 
 @permissions.is_logged_in
