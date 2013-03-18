@@ -10,6 +10,7 @@
 </style>
 
 <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/css/bootstrap-combined.min.css" rel="stylesheet">
+<link rel="stylesheet" href="style.css" />
 
 <!-- HaXx0r --> <br><br><br> <div align=center> <!-- /HaXx0r -->
 
@@ -193,7 +194,7 @@
     xhr.onreadystatechange = function() {
       if(xhr.readyState === 4) {
         if (xhr.status === 200) callback(JSON.parse(xhr.responseText));
-        if (xhr.status === 400) alert(JSON.parse(xhr.responseText()).error);
+        if (xhr.status === 400) alert(JSON.parse(xhr.responseText).error);
       }
     };
     xhr.send(data);
@@ -201,6 +202,11 @@
 
   function collapse(i){
     $("#body"+i).slideToggle("slow");
+    var header = $("#header"+i);
+    if(header.hasClass("activeEvent"))
+      header.removeClass("activeEvent");
+    else  
+      header.addClass("activeEvent");
   };
 
 </script>
