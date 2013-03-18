@@ -327,6 +327,9 @@ def _getPlaces(request):
 def getEvents(request):
   if request.method == 'POST':
     places = _getPlaces(request)
+    intrest = request.POST.get('intrest', None)
+    prix = request.POST.get('prix', None)
+    time = request.POST.get('time', None)
     to_return = []
     for place in places:
       if place['source'] != "False":
