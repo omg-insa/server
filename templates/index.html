@@ -10,6 +10,7 @@
 </style>
 
 <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/css/bootstrap-combined.min.css" rel="stylesheet">
+<link rel="stylesheet" href="style.css" />
 
 <!-- HaXx0r --> <br><br><br> <div align=center> <!-- /HaXx0r -->
 
@@ -43,9 +44,9 @@
 
     <section id=events>
       <p> Events nearby </p>
-      <div class="accordion" id="accordion2">
+      <div class="accordion" id="accordion">
        <div class="accordion-group">
-        <div class="accordion-heading">
+        <div id="header1" class="accordion-heading activeEvent">
          <a href="javascript:void(0)" onclick="collapse(1)">Name Event</a>
         </div>
         <div id="body1" class="accordion-body">
@@ -71,7 +72,7 @@
         <div class="accordion-heading">
          <a href="javascript:void(0)" onclick="collapse(2)">Name Event</a>
         </div>
-        <div id="body2" class="accordion-body collapse">
+        <div id="body2" class="accordion-body">
          <div class="accordion-inner">
            <table class="table">
             <tr>
@@ -223,6 +224,11 @@
 
   function collapse(i){
     $("#body"+i).slideToggle("slow");
+    var header = $("#header"+i);
+    if(header.hasClass("activeEvent"))
+      header.removeClass("activeEvent");
+    else  
+      header.addClass("activeEvent");
   };
 
 </script>
