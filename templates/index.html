@@ -21,11 +21,18 @@
   </form>
 
   <form>
+    <!-- argh bootstrap X( -->
     <div class="navbar navbar-inverse navbar-fixed-top">
-      <ul class="nav navbar-inner">
-        <li class=active> Events </li>
-        <li> Profile </li>
-      </ul>
+      <div class="navbar-inner">
+        <div class="container">
+          <div class="nav-collapse collapse">
+            <ul class="nav">
+              <li class="active"> <a href=#> Events </a> </li>
+              <li> <a href=#> Profile </a> </li>
+            </ul>
+          </div>
+        </div>
+      </div>
     </div>
 
     <section>
@@ -97,7 +104,7 @@
     '/api/get_events/',
     'auth_token=' + auth_token + '&radius=5000&latitude=' + lat + '&longitude=' + lon,
     function(data) {
-      for (var i = 0; i < data.list; i++) {
+      for (var i = 0; i < data.list.length; i++) {
         var article = document.createElement('article'), name = document.createElement('p'), address = document.createElement('p'), description = document.createElement('p');
         name.textContent = data.list[i].name,
         address.textContent = data.list[i].address,
