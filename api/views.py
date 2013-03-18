@@ -354,7 +354,7 @@ def getEvents(request):
         if prix  and (int)(event.price) > (int)(prix):
           logging.info("Exited because of the price %s %s", prix, event.price)
           continue
-        if time and  event.start_time > time:
+        if time and  event.start_time < time:
           logging.info("Exited because of the time %s %s", time,event.start_time)
           continue
         if len(intrests_id):
