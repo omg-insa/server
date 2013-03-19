@@ -8,6 +8,7 @@
   { 
     background: #150218 url('background.jpg') no-repeat top;
     background-size: 100%;
+    padding: 4px;
   }
   #login_div_bck
   {
@@ -46,7 +47,7 @@
   }
   .navbar-inner
   {
-    box-shadow: 0 0 50px 2px #fff !important;
+    box-shadow: 0 0 50px 2px #bbb !important;
   }
   .navbar .nav>:not(.active)>a 
   { 
@@ -88,7 +89,8 @@
     filter: progid:DXImageTransform.Microsoft.gradient(enabled=false);
   }
   .accordion-heading a { color: #fff; text-decoration: none; }
-  #map-canvas { height: 400px; width: 500px }
+  #map-canvas { height: 400px; width: 500px; }
+  #map-canvas img { max-width: inherit; }
 </style>
 
 <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/css/bootstrap-combined.min.css" rel="stylesheet">
@@ -260,6 +262,7 @@
 	var mapOptions = {
       center: new google.maps.LatLng(lat, lon),
       zoom: 15,
+      mapTypeControl: false,
       mapTypeId: google.maps.MapTypeId.ROADMAP
     };
     map = new google.maps.Map(document.getElementById("map-canvas"), mapOptions);
