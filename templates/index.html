@@ -42,15 +42,20 @@
     box-shadow: 0 0 50px 2px #bbb !important;
   }
   .navbar .nav>:not(.active)>a { 
+    color: #aaa !important; 
+    text-shadow: 0 0px 0 #ffffff !important;
+  }
+  .navbar .nav>.active>a { 
     color: #fff !important; 
     text-shadow: 0 0px 0 #ffffff !important;
   }
   .active { display: block !important }
   form { display: none }
   section { 
-    width: 33%; 
+    width: 30%; 
     float: left;
-    color: #fff; 
+    color: #fff;
+    margin: 0 10px 0 10px; 
   }
   .accordion-heading {
     background: rgb(14,14,14); /* Old browsers */
@@ -79,7 +84,7 @@
     filter: progid:DXImageTransform.Microsoft.gradient(enabled=false);
   }
   .accordion-heading a { color: #fff; text-decoration: none; }
-  #map-canvas { height: 400px; width: 500px; }
+  #map-canvas { height: 400px; width: 100%; }
   #map-canvas img { max-width: inherit; }
 </style>
 
@@ -217,15 +222,15 @@
         });
         d2.addEventListener('click', function() {collapse(i);});
         e.appendChild(d1);
-        var lol = {
+        var markerEvent = {
           map: map,
           draggable: false,
           animation: google.maps.Animation.DROP,
           position: new google.maps.LatLng(data.list[i].lat, data.list[i].lon),
           title: data.list[i].name
         };
-        console.log(lol);
-        new google.maps.Marker(lol);
+        //console.log(markerEvent);
+        new google.maps.Marker(markerEvent);
       }
     }
   ), post(
