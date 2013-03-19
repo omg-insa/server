@@ -215,7 +215,7 @@
           var td = document.createElement('td'); tr.appendChild(td); td.textContent = data.list[i][s[1]];
           table.appendChild(tr);
         });
-        d2.addEventListener('click', function() {collapse(i);});
+        d2.addEventListener('click', function() {collapse(''+i);});
         e.appendChild(d1);
         var lol = {
           map: map,
