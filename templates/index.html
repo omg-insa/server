@@ -271,7 +271,7 @@
         };
         //console.log(markerEvent);
         new google.maps.Marker(markerEvent);
-        collapse(i);
+        if (i > 0) collapse(i);
       }
     }
   ), post(
