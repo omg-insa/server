@@ -5,7 +5,7 @@
 <style>
   html { height: 100%; }
   body { 
-    background: #150218 url('background.jpg') no-repeat top;
+    background: #150218 url('/static/background.jpg') no-repeat top;
     background-size: 100%;
     padding: 4px;
   }
@@ -94,7 +94,7 @@
   <form id="login-form" action=javascript:login() class=active>
     <div id="login_div_bck"> </div>
     <div id="login_div">
-      <img src="syp.png" width="150px"/>
+      <img src="/static/syp.png" width="150px"/>
       <input type=text name=email title=email placeholder=email style=display:none /> <br>
       <input type=text name=username title=username placeholder=username /> <br>
       <input type=password name=password title=password placeholder=password /> <br>
@@ -206,12 +206,11 @@
     '/api/get_events/',
     'auth_token=' + auth_token + '&radius=5000&latitude=' + lat + '&longitude=' + lon,
     function(data) {
-
       for (var i = 0; i < data.list.length; i++) {
         var d1 = document.createElement('div'); d1.classList.add('accordion-group');
         var d2 = document.createElement('div'); d2.classList.add('accordion-heading'); if (i < 1) d2.classList.add('activeEvent'); d2.id = 'header' + i; d1.appendChild(d2); d2.textContent = data.list[i].name + ' (' + data.list[i].type + ')';
         var d3 = document.createElement('div'); d3.classList.add('accordion-body'); d3.id = 'body' + i; d1.appendChild(d3);
-        var d4 = document.createElement('div'); d4.classList.add('accordion-inner'); d1.appendChild(d4);
+        var d4 = document.createElement('div'); d4.classList.add('accordion-inner'); d3.appendChild(d4);
         var table = document.createElement('table'); table.classList.add('table'); d4.appendChild(table);
         [['Place', 'address'], ['About', 'description']].forEach(function(s) {
           if (!(data.list[i][s[1]])) return;
@@ -220,7 +219,7 @@
           var td = document.createElement('td'); tr.appendChild(td); td.textContent = data.list[i][s[1]];
           table.appendChild(tr);
         });
-        d2.addEventListener('click', function() {collapse(i);});
+        d2.addEventListener('click', function() {collapse(''+i);});
         e.appendChild(d1);
         var markerEvent = {
           map: map,
@@ -238,6 +237,17 @@
     'auth_token=' + auth_token,
     function(data) {
       document.querySelector('#pevents').textContent = JSON.stringify(data, null, 2);
+    }
+  ), post(
+    '/api/get_full_user_info/',
+    'auth_token=' + auth_token,
+    function(data) {
+      form[1].fullname.value = data.full_name;
+      form[1].email.value = data.email;
+      form[1].birthday.value = data.birthday;
+      form[1].sex.value = data.sex;
+      form[1].status.value = data.status;
+      form[1].username = data.username;
     }
   )};
 
