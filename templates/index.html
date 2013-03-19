@@ -4,8 +4,10 @@
 
 <style>
   html { height: 100%; }
-  body { 
+  body 
+  { 
     background: #150218 url('/static/background.jpg') no-repeat top;
+    background-attachment:fixed;
     background-size: 100%;
     padding: 4px;
   }
@@ -58,15 +60,10 @@
     margin: 0 10px 0 10px; 
   }
   .accordion-heading {
-    background: rgb(14,14,14); /* Old browsers */
-    background: -moz-linear-gradient(top,  rgba(14,14,14,1) 0%, rgba(125,126,125,1) 100%); /* FF3.6+ */
-    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(14,14,14,1)), color-stop(100%,rgba(125,126,125,1))); /* Chrome,Safari4+ */
-    background: -webkit-linear-gradient(top,  rgba(14,14,14,1) 0%,rgba(125,126,125,1) 100%); /* Chrome10+,Safari5.1+ */
-    background: -o-linear-gradient(top,  rgba(14,14,14,1) 0%,rgba(125,126,125,1) 100%); /* Opera 11.10+ */
-    background: -ms-linear-gradient(top,  rgba(14,14,14,1) 0%,rgba(125,126,125,1) 100%); /* IE10+ */
-    background: linear-gradient(to bottom,  rgba(14,14,14,1) 0%,rgba(125,126,125,1) 100%); /* W3C */
-    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#0e0e0e', endColorstr='#7d7e7d',GradientType=0 ); /* IE6-9 */
+    background-color: #888;
     color: #fff;
+    border: 1px solid #fff;
+    border-radius: 10px;
   }
   .activeEvent {
     color: #ffffff;
@@ -127,6 +124,21 @@
 
     <section id=events class=accordion>
       <p> Events nearby </p>
+      <div class="accordion-heading" id="header0">Disco Fever</div>
+      <div class="accordion-body" id="body0">
+        <div class="accordion-inner">
+          <table class="table">
+            <tr>
+              <th>Place</th>
+              <td>test</td>
+            </tr>
+            <tr>
+              <th>About</th>
+              <td>Dechaine toi</td>
+            </tr>
+          </table>
+        </div>
+      </div> 
     </section>
 
     <section id=pevents>
