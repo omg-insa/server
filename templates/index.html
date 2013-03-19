@@ -114,6 +114,7 @@
             <ul class="nav">
               <li class="active"> <a href=javascript:void(0)> Events </a>
               <li> <a href=javascript:hide(1),show(2)> Profile </a>
+              <li> <a href=javascript:hide(1),show(3)> About </a>
               <li> <a href=javascript:logout()> Logout </a>
             </ul>
           </div>
@@ -143,6 +144,7 @@
             <ul class="nav">
               <li> <a href=javascript:hide(2),show(1)> Events </a>
               <li class="active"> <a href=javascript:void(0)> Profile </a>
+              <li> <a href=javascript:hide(2),show(3)> About </a>
               <li> <a href=javascript:logout()> Logout </a>
             </ul>
           </div>
@@ -162,6 +164,42 @@
       <option value=2> with someone </option>
     </select> <br>
     <input type=submit value=submit class="btn btn-primary">
+  </form>
+
+  <form>
+    <!-- argh bootstrap X( -->
+    <div class="navbar navbar-inverse navbar-fixed-top">
+      <div class="navbar-bck">
+      </div>
+      <div class="navbar-inner">
+        <div class="container">
+          <div class="nav-collapse collapse">
+            <ul class="nav">
+              <li> <a href=javascript:hide(3),show(1)> Events </a>
+              <li> <a href=javascript:hide(3),show(2)> Profile </a>
+              <li class="active"> <a href=javascript:void(0)> About </a>
+              <li> <a href=javascript:logout()> Logout </a>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <h1> Qui sommes-nous ? </h1>
+    <p> Un groupe de 7 étudiants en dernière année d’école d’ingénieur à l’INSA de Lyon, spécialisés dans plusieurs disciplines : Informatique, Télécommunications et Génie Electrique. </p>
+    <ul>
+      <li> Léo Ardon </li>
+      <li> Daniel Baudry </li>
+      <li> Stefan Chitic </li>
+      <li> Jan Keromnes </li>
+      <li> Pierre Monjallon </li>
+      <li> Thomas Ragon </li>
+      <li> Mickael Robert </li>
+    </ul>
+    <h1> Notre projet </h1>
+    <p> Dans le cadre d’un cours d’option transversale, nous avons décidé de nous diriger vers un concept simple et universel : trouver et partager les évènements à proximité de vous en temps réel. </p>
+    <p> Pour cela nous avons développé une application mobile sous Android disponible sur Google Play ainsi que cette web application. Nous avons fait le choix de rendre payante notre application mobile pour raison technique. En effet, les requêtes de données transitent par Google AP Engine, et n’ayant pas de compte professionnel, nous sommes exposés à une limite de connexions par jour. Le potentiel profit que l’on tirera de cette vente servira à financer une augmentation du nombre de connexions journalières. </p>
+
   </form>
 
 </div>
@@ -242,12 +280,12 @@
     '/api/get_full_user_info/',
     'auth_token=' + auth_token,
     function(data) {
-      form[1].fullname.value = data.full_name;
-      form[1].email.value = data.email;
-      form[1].birthday.value = data.birthday;
-      form[1].sex.value = data.sex;
-      form[1].status.value = data.status;
-      form[1].username = data.username;
+      form[2].fullname.value = data.full_name;
+      form[2].email.value = data.email;
+      form[2].birthday.value = data.birthday;
+      form[2].sex.value = data.sex;
+      form[2].status.value = data.status;
+      form[2].username = data.username;
     }
   )};
 
