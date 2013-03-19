@@ -4,14 +4,12 @@
 
 <style>
   html { height: 100%; }
-  body 
-  { 
+  body { 
     background: #150218 url('background.jpg') no-repeat top;
     background-size: 100%;
     padding: 4px;
   }
-  #login_div_bck
-  {
+  #login_div_bck {
     width: 25%;
     height: 250px;
     opacity: 0.4;
@@ -26,8 +24,7 @@
     border-width:2px;
     border-color: gray;
   }
-  #login_div
-  {
+  #login_div {
     width: 33%;
     height: 175px;
     position:absolute;
@@ -37,27 +34,20 @@
     background-color: transparent;
     text-align: center;
   }
-  #login_div img
-  {
+  #login_div img {
     margin-bottom: 20px;
-  }
-  .navbar
-  {
-    background-color: #000;
   }
   .navbar-inner
   {
     box-shadow: 0 0 50px 2px #bbb !important;
   }
-  .navbar .nav>:not(.active)>a 
-  { 
+  .navbar .nav>:not(.active)>a { 
     color: #fff !important; 
     text-shadow: 0 0px 0 #ffffff !important;
   }
   .active { display: block !important }
   form { display: none }
-  section 
-  { 
+  section { 
     width: 33%; 
     float: left;
     color: #fff; 
@@ -97,8 +87,7 @@
 
 <!-- HaXx0r --> <br><br><br> <div align=center> <!-- /HaXx0r -->
   <form id="login-form" action=javascript:login() class=active>
-    <div id="login_div_bck">
-    </div>
+    <div id="login_div_bck"> </div>
     <div id="login_div">
       <img src="syp.png" width="150px"/>
       <input type=text name=email title=email placeholder=email style=display:none /> <br>
@@ -200,7 +189,13 @@
   )};
 
   function loginfail() { l.disabled = false }
-  function register() { form[0].firstElementChild.style.display = 'inline-block'; form[0].lastElementChild.style.display = 'none'; l.value = 'submit' };
+  function register() {
+    form[0].lastElementChild.firstElementChild.style.display = 'none';
+    form[0].lastElementChild.firstElementChild.nextElementSibling.style.display = 'inline-block';
+    form[0].lastElementChild.firstElementChild.nextElementSibling.style['margin-top'] = '81px';
+    form[0].lastElementChild.lastElementChild.style.display = 'none';
+    l.value = 'submit';
+  };
 
   function init() { hide(0), show(1), initMap(), post(
     '/api/get_events/',
