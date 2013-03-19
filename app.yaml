@@ -1,5 +1,5 @@
 application: shareyourpty
-version: 20130311-dev
+version: 20130313-dev
 runtime: python27
 api_version: 1
 threadsafe: yes
@@ -15,6 +15,9 @@ libraries:
   version: latest
 
 handlers:
+- url: /download
+  static_dir: download
+
 - url: /_ah/queue/deferred
   script: djangoappengine.deferred.handler.application
   login: admin
