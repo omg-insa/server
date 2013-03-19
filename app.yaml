@@ -18,6 +18,9 @@ handlers:
 - url: /download
   static_dir: download
 
+- url: /static
+  static_dir: static
+
 - url: /_ah/queue/deferred
   script: djangoappengine.deferred.handler.application
   login: admin
