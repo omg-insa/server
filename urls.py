@@ -7,4 +7,6 @@ urlpatterns = patterns('',
     (r'^api/*',include('api.urls')),
     ('^$', 'django.views.generic.simple.direct_to_template',
      {'template': 'index.html'}),
+    (r'^download/(?P<path>.*)$', 'django.views.static.serve',
+     {'document_root': '/download'}),
 )
