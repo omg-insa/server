@@ -40,17 +40,13 @@
   {
     margin-bottom: 20px;
   }
+  .navbar
+  {
+    background-color: #000;
+  }
   .navbar-inner
   {
-    background: rgb(51,24,56) !important; /* Old browsers */
-    background: -moz-linear-gradient(top,  rgba(51,24,56,1) 0%, rgba(66,33,66,1) 53%, rgba(81,38,73,1) 100%) !important; /* FF3.6+ */
-    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(51,24,56,1)), color-stop(53%,rgba(66,33,66,1)), color-stop(100%,rgba(81,38,73,1))) !important; /* Chrome,Safari4+ */
-    background: -webkit-linear-gradient(top,  rgba(51,24,56,1) 0%,rgba(66,33,66,1) 53%,rgba(81,38,73,1) 100%) !important; /* Chrome10+,Safari5.1+ */
-    background: -o-linear-gradient(top,  rgba(51,24,56,1) 0%,rgba(66,33,66,1) 53%,rgba(81,38,73,1) 100%) !important; /* Opera 11.10+ */
-    background: -ms-linear-gradient(top,  rgba(51,24,56,1) 0%,rgba(66,33,66,1) 53%,rgba(81,38,73,1) 100%) !important; /* IE10+ */
-    background: linear-gradient(to bottom,  rgba(51,24,56,1) 0%,rgba(66,33,66,1) 53%,rgba(81,38,73,1) 100%) !important; /* W3C */
-    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#331838', endColorstr='#512649',GradientType=0 ) !important; /* IE6-9 */
-    border-bottom: 1px solid #331838 !important;
+    box-shadow: 0 0 50px 2px #fff !important;
   }
   .navbar .nav>:not(.active)>a 
   { 
@@ -113,7 +109,9 @@
 
   <form>
     <!-- argh bootstrap X( -->
-    <div class="navbar navbar-fixed-top">
+    <div class="navbar navbar-inverse navbar-fixed-top">
+      <div class="navbar-bck">
+      </div>
       <div class="navbar-inner">
         <div class="container">
           <div class="nav-collapse collapse">
