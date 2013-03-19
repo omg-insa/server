@@ -269,7 +269,7 @@
           var td = document.createElement('td'); tr.appendChild(td); td.textContent = data.list[i][s[1]];
           table.appendChild(tr);
         });
-        d2.addEventListener('click', function() {collapse(''+i);});
+        d2.addEventListener('click', collapse.bind({}, i));
         e.appendChild(d1);
         var markerEvent = {
           map: map,
@@ -297,7 +297,7 @@
       form[2].birthday.value = data.birthday;
       form[2].sex.value = data.sex;
       form[2].status.value = data.status;
-      form[2].username = data.username;
+      form[2].username.value = data.username;
     }
   )};
 
