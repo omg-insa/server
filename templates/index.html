@@ -130,21 +130,6 @@
 
     <section id=events class=accordion>
       <p> Events nearby </p>
-      <div class="accordion-heading" id="header0">Disco Fever</div>
-      <div class="accordion-body" id="body0">
-        <div class="accordion-inner">
-          <table class="table">
-            <tr>
-              <th>Place</th>
-              <td>test</td>
-            </tr>
-            <tr>
-              <th>About</th>
-              <td>Dechaine toi</td>
-            </tr>
-          </table>
-        </div>
-      </div> 
     </section>
 
     <section id=pevents>
@@ -263,7 +248,7 @@
     function(data) {
       for (var i = 0; i < data.list.length; i++) {
         var d1 = document.createElement('div'); d1.classList.add('accordion-group');
-        var d2 = document.createElement('div'); d2.classList.add('accordion-heading'); if (i < 1) d2.classList.add('activeEvent'); d2.id = 'header' + i; d1.appendChild(d2); d2.textContent = data.list[i].name + ' (' + data.list[i].type + ')';
+        var d2 = document.createElement('div'); d2.classList.add('accordion-heading'); d2.classList.add('activeEvent'); d2.id = 'header' + i; d1.appendChild(d2); d2.textContent = data.list[i].name + ' (' + data.list[i].type + ')';
         var d3 = document.createElement('div'); d3.classList.add('accordion-body'); d3.id = 'body' + i; d1.appendChild(d3);
         var d4 = document.createElement('div'); d4.classList.add('accordion-inner'); d3.appendChild(d4);
         var table = document.createElement('table'); table.classList.add('table'); d4.appendChild(table);
@@ -274,7 +259,8 @@
           var td = document.createElement('td'); tr.appendChild(td); td.textContent = data.list[i][s[1]];
           table.appendChild(tr);
         });
-        d2.addEventListener('click', function() {collapse(''+i);});
+        var id = '' + i;
+        d2.addEventListener('click', collapse.bind({}, id));
         e.appendChild(d1);
         var markerEvent = {
           map: map,
@@ -285,6 +271,7 @@
         };
         //console.log(markerEvent);
         new google.maps.Marker(markerEvent);
+        collapse(i);
       }
     }
   ), post(
@@ -302,7 +289,7 @@
       form[2].birthday.value = data.birthday;
       form[2].sex.value = data.sex;
       form[2].status.value = data.status;
-      form[2].username = data.username;
+      form[2].username.value = data.username;
     }
   )};
 
