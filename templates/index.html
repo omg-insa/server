@@ -5,11 +5,20 @@
 <style>
   html { height: 100%; }
   h1 { 
-    color: #fff;
-    text-shadow: 2px 2px #fff;
+    font-family: 'Handlee', cursive !important;
    }
   ul{
     list-style-type: none;
+  }
+  #aboutForm {
+    width: 100%;
+  }
+  .floatDiv {
+    float: left;
+    display: block;
+    width: 30%;
+    text-align: left;
+    margin: 5% 0 0 0;
   }
   body 
   { 
@@ -97,7 +106,7 @@
   #map-canvas { height: 400px; width: 100%; }
   #map-canvas img { max-width: inherit; }
 </style>
-
+<link href='http://fonts.googleapis.com/css?family=Handlee' rel='stylesheet' type='text/css'>
 <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/css/bootstrap-combined.min.css" rel="stylesheet">
 
 <!-- HaXx0r --> <br><br><br> <div align=center> <!-- /HaXx0r -->
@@ -176,7 +185,7 @@
     <input type=submit value=submit class="btn btn-primary">
   </form>
 
-  <form>
+  <form id="aboutForm">
     <!-- argh bootstrap X( -->
     <div class="navbar navbar-inverse navbar-fixed-top">
       <div class="navbar-bck">
@@ -194,21 +203,27 @@
         </div>
       </div>
     </div>
-
-    <h1> Qui sommes-nous ? </h1>
-    <p> Un groupe de 7 étudiants en dernière année d’école d’ingénieur à l’INSA de Lyon, spécialisés dans plusieurs disciplines : Informatique, Télécommunications et Génie Electrique. </p>
-    <ul>
-      <li> Leo Ardon </li>
-      <li> Daniel Baudry </li>
-      <li> Stefan Chitic </li>
-      <li> Jan Keromnes </li>
-      <li> Pierre Monjallon </li>
-      <li> Thomas Ragon </li>
-      <li> Mickael Robert </li>
-    </ul>
-    <h1> Notre projet </h1>
-    <p> Dans le cadre d’un cours d’option transversale, nous avons décidé de nous diriger vers un concept simple et universel : trouver et partager les évènements à proximité de vous en temps réel. </p>
-    <p> Pour cela nous avons développé une application mobile sous Android disponible sur Google Play ainsi que cette web application. Nous avons fait le choix de rendre payante notre application mobile pour raison technique. En effet, les requêtes de données transitent par Google App Engine, et n’ayant pas de compte professionnel, nous sommes exposés à une limite de connexions par jour. Le potentiel profit que l’on tirera de cette vente servira à financer une augmentation du nombre de connexions journalières. </p>
+    <div id="divTeam" class="floatDiv">
+      <h1> Qui sommes-nous ? </h1>
+      <p> Un groupe de 7 étudiants en dernière année d’école d’ingénieur à l’INSA de Lyon, spécialisés dans plusieurs disciplines : Informatique, Télécommunications et Génie Electrique. </p>
+      <ul>
+        <li> Leo Ardon </li>
+        <li> Daniel Baudry </li>
+        <li> Stefan Chitic </li>
+        <li> Jan Keromnes </li>
+        <li> Pierre Monjallon </li>
+        <li> Thomas Ragon </li>
+        <li> Mickael Robert </li>
+      </ul>
+    </div>
+    <div id="divLogo" class="floatDiv">
+      <img src="logo_couverture.png" width="400px">
+    </div>
+    <div id="divProject" class="floatDiv">
+      <h1> Notre projet </h1>
+      <p> Dans le cadre d’un cours d’option transversale, nous avons décidé de nous diriger vers un concept simple et universel : trouver et partager les évènements à proximité de vous en temps réel. </p>
+      <p> Pour cela nous avons développé une application mobile sous Android disponible sur Google Play ainsi que cette web application. Nous avons fait le choix de rendre payante notre application mobile pour raison technique. En effet, les requêtes de données transitent par Google App Engine, et n’ayant pas de compte professionnel, nous sommes exposés à une limite de connexions par jour. Le potentiel profit que l’on tirera de cette vente servira à financer une augmentation du nombre de connexions journalières. </p>
+    </div>
 
   </form>
 
