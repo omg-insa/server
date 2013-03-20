@@ -168,6 +168,7 @@
       <input type=text name=start_time title=start_time placeholder=start_time /> <br>
       <input type=text name=end_time title=end_time placeholder=end_time /> <br>
       <select name=place title=place> </select> <br>
+      <input type=button value=submit class="btn btn-primary" onclick=addEvent()>
     </section>
   </form>
 
@@ -329,26 +330,7 @@
         form[2].place.appendChild(option);
       }
     }
-  ), post(
-    '/api/get_event_intrest/',
-    'auth_token=' + auth_token,
-    function(data) {
-      for (var i = 0; i < data.list.length; i++) {
-        var checkbox = document.createElement('input');
-        checkbox.type = 'checkbox';
-        checkbox.name = 'intrests';
-        checkbox.value = data.list[i].id;
-        var label = docment.createElement('label');
-        label.textContent = data.list[i].name;
-        document.querySelector('#pevents').appendChild(checkbox);
-        document.querySelector('#pevents').appendChild(label);
-      }
-      var button = document.createElement('input'); button.type = 'button'; button.class = 'btn btn-primary'; button.value = 'create';
-      button.addEventListener('click', addEvent);
-      document.querySelector('#pevents').appendChild(button);
-    }
-  )
-  };
+  )};
 
   function addEvent() { post(
     '/api/add_event_info/',
@@ -359,15 +341,6 @@
         'auth_token=' + auth_token + '&event_id=' + data.id + '&place_id=' + form[1].place.value,
         function() {}
       )
-      var intrests = document.querySelector('input[type=checkbox]');
-      for (var i = 0; i < intrests.length; i++) {
-        if (!intrests[i].checked) continue;
-        post(
-          '/api/save_event_intrest/',
-          'auth_token=' + auth_token + '&event_id=' + data.id + '&intrest_id=' + intrests[i].value,
-          function() {}
-        )
-      }
     }
   )};
 
