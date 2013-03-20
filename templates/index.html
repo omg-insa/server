@@ -333,7 +333,7 @@
     function(data) {
       post(
         '/api/save_event_place/',
-        'auth_token=' + auth_token + '&event_id=' + data.id + '&place_id=' + form[1].place.value,
+        'auth_token=' + auth_token + '&event_id=' + data.id + '&place_id=' + form[1].place.value + '&is_local=True',
         function() {}
       )
     }
