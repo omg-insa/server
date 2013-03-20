@@ -293,13 +293,14 @@
     '/api/get_events/',
     'auth_token=' + auth_token + '&radius=5000&latitude=' + lat + '&longitude=' + lon,
     function(data) {
-      appendlist(e, data.list, '');
-      new google.maps.Marker({
-        map: map,
-        draggable: false,
-        animation: google.maps.Animation.DROP,
-        position: new google.maps.LatLng(data.list[i].lat, data.list[i].lon),
-        title: data.list[i].name
+      appendlist(e, data.list, '', function(e) {
+        new google.maps.Marker({
+          map: map,
+          draggable: false,
+          animation: google.maps.Animation.DROP,
+          position: new google.maps.LatLng(e.lat, e.lon),
+          title: e.name
+        });
       });
     }
   ), post(
@@ -344,7 +345,7 @@
     }
   )};
 
-  function appendlist(element, list, prefix) {
+  function appendlist(element, list, prefix, after) {
     for (var i = 0; i < list.length; i++) {
       var d1 = document.createElement('div'); d1.classList.add('accordion-group');
       var d2 = document.createElement('div'); d2.classList.add('accordion-heading'); d2.classList.add('activeEvent'); d2.id = prefix + 'header' + i; d1.appendChild(d2); d2.textContent = list[i].name + ' (' + list[i].type + ')';
@@ -362,6 +363,7 @@
       d2.addEventListener('click', collapse.bind({}, prefix, id));
       element.appendChild(d1);
       if (i > 0) collapse(prefix, i);
+      if (after) after(list[i]);
     }
   }
 
