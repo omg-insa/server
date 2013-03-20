@@ -4,7 +4,7 @@
 
 <style>
   html { height: 100%; }
-  h1 { 
+  h1 {
     font-family: 'Handlee', cursive !important;
    }
   ul{
@@ -20,7 +20,7 @@
     text-align: left;
     margin: 5% 0 0 0;
   }
-  body 
+  body
   {
     background: #150218 url('/static/background.png') no-repeat top;
     background-attachment:fixed;
@@ -60,21 +60,21 @@
   {
     box-shadow: 0 0 50px 2px #bbb !important;
   }
-  .navbar .nav>:not(.active)>a { 
-    color: #aaa !important; 
+  .navbar .nav>:not(.active)>a {
+    color: #aaa !important;
     text-shadow: 0 0px 0 #ffffff !important;
   }
-  .navbar .nav>.active>a { 
-    color: #fff !important; 
+  .navbar .nav>.active>a {
+    color: #fff !important;
     text-shadow: 0 0px 0 #ffffff !important;
   }
   .active { display: block !important }
   form { display: none }
-  section { 
-    width: 30%; 
+  section {
+    width: 30%;
     float: left;
     color: #fff;
-    margin: 0 10px 0 10px; 
+    margin: 0 10px 0 10px;
   }
   .accordion-heading {
     background-color: #888;
@@ -151,15 +151,12 @@
 
     <section id=pevents>
       <p> Personal events </p>
-	  <input type=text name=name title=name placeholder=name /> <br>
-	  <input type=text name=price title=price placeholder=price /> <br>
-	  <input type=text name=description title=description placeholder=description /> <br>
-	  <input type=text name=start_time title=start_time placeholder=start_time /> <br>
-	  <input type=text name=end_time title=end_time placeholder=end_time /> <br>
-	  <select name=place title=place>
-      </select> <br>
-	  <!-- -->
-	  
+      <input type=text name=name title=name placeholder=name /> <br>
+      <input type=text name=price title=price placeholder=price /> <br>
+      <input type=text name=description title=description placeholder=description /> <br>
+      <input type=text name=start_time title=start_time placeholder=start_time /> <br>
+      <input type=text name=end_time title=end_time placeholder=end_time /> <br>
+      <select name=place title=place> </select> <br>
     </section>
   </form>
 
@@ -278,7 +275,6 @@
     'auth_token=' + auth_token + '&radius=5000&latitude=' + lat + '&longitude=' + lon,
     function(data) {
       appendlist(e, data.list, '');
-      if (i > 0) collapse('', i);
       new google.maps.Marker({
         map: map,
         draggable: false,
@@ -292,7 +288,6 @@
     'auth_token=' + auth_token,
     function(data) {
       appendlist(document.querySelector('#pevents'), data.list, 'p');
-      if (i > 0) collapse('p', i);
     }
   ), post(
     '/api/get_full_user_info/',
@@ -305,54 +300,58 @@
       form[2].status.value = data.status;
       form[2].username.value = data.username;
     }
-  )};
-  
-  
-  function addEvent(){ post(
-	'/api/add_event_info',
-    'auth_token=' + auth_token + '&name=' + form[3].name + '&description=' + form[3].description + '&price=' + form[3].price + '&start_time=' + form[3].start_time + '&end_time=' + form[3].end_time,
-	function(data){
-		saveEventPlace(data.id)
-	}
-  )};
-  
-  function saveEventPlace(id){ post(
-	'/api/save_event_place',
-    'auth_token=' + auth_token + '&event_id=' + id + '&place_id=' ,
-	function(data){
-		saveEventIntrest(data.id);
-	}
-  )};
-  
-  function saveEventIntrest(id){ post(
-	'/api/save_event_intrest',
-    'auth_token=' + auth_token + '&event_id=' + id + '&intrest_id=',
-	function(data){
-	}
-  )};
-  
-  function getPlaces(){ post(
-	'/api/get_places',
+  ), post(
+    '/api/get_places/',
     'auth_token=' + auth_token + '&radius=5000&latitude=' + lat + '&longitude=' + lon,
-	function(data){
-		for (var i = 0; i < data.list.length; i++) {
-			form[2].place.append('<option value=' + data.list[i].id + '>' + data.list[i].name + '</option>');
-		}
-	}
-  )};
-  
-  function getEventIntrests(){ post(
-	'/api/get_event_intrest',
+    function(data) {
+      for (var i = 0; i < data.list.length; i++) {
+        var option = document.createElement('option');
+        option.value = data.list[i].id;
+        option.textContent = data.list[i].name;
+        form[2].place.appendChild(option);
+      }
+    }
+  ), post(
+    '/api/get_event_intrest/',
     'auth_token=' + auth_token,
-	function(data){
-		for (var i = 0; i < data.list.length; i++) {
-			document.querySelector('#pevents').appendChild('<input type="checkbox" name="demo" value="' + data.list[i].id + '" /> ' + data.list[i].id + ' <br />');
-		}
-		document.querySelector('#pevents').appendChild('<input type=button class="btn btn-primary" value=create id=create onclick="addEvent()" />');
+    function(data) {
+      for (var i = 0; i < data.list.length; i++) {
+        var checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.name = 'intrests';
+        checkbox.value = data.list[i].id;
+        var label = docment.createElement('label');
+        label.textContent = data.list[i].name;
+        document.querySelector('#pevents').appendChild(checkbox);
+        document.querySelector('#pevents').appendChild(label);
+      }
+      var button = document.createElement('input'); button.type = 'button'; button.class = 'btn btn-primary'; button.value = 'create';
+      button.addEventListener('click', addEvent);
+      document.querySelector('#pevents').appendChild(button);
+    }
+  )
+  };
 
-	}
+  function addEvent() { post(
+    '/api/add_event_info/',
+    'auth_token=' + auth_token + '&name=' + form[1].name.value + '&description=' + form[1].description.value + '&price=' + form[1].price.value + '&start_time=' + form[1].start_time.value + '&end_time=' + form[1].end_time.value,
+    function(data) {
+      post(
+        '/api/save_event_place/',
+        'auth_token=' + auth_token + '&event_id=' + data.id + '&place_id=' + form[1].place.value,
+        function() {}
+      )
+      var intrests = document.querySelector('input[type=checkbox]');
+      for (var i = 0; i < intrests.length; i++) {
+        if (!intrests[i].checked) continue;
+        post(
+          '/api/save_event_intrest/',
+          'auth_token=' + auth_token + '&event_id=' + data.id + '&intrest_id=' + intrests[i].value,
+          function() {}
+        )
+      }
+    }
   )};
-
 
   function appendlist(element, list, prefix) {
     for (var i = 0; i < list.length; i++) {
@@ -371,6 +370,7 @@
       var id = '' + i;
       d2.addEventListener('click', collapse.bind({}, prefix, id));
       element.appendChild(d1);
+      if (i > 0) collapse(prefix, i);
     }
   }
 
@@ -395,7 +395,7 @@
     var scale =  10;
     var zoomLevel = Math.round((16 - Math.log(scale) / Math.log(2)) + 1);
 
-	var mapOptions = {
+    var mapOptions = {
       center: new google.maps.LatLng(lat, lon),
       zoom: zoomLevel,
       mapTypeControl: false,
