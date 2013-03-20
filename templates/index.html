@@ -307,9 +307,9 @@
 
   function update() { post(
     '/api/update_user_info',
-    'auth_token=' + auth_token + '&full_name=' + form[2].fullname + '&email=' + form[2].email + '&birthday=' + form[2].birthday + '&sex=' + form[2].sex + '&status=' + form[2].status,
+    'auth_token=' + auth_token + '&full_name=' + form[2].fullname.value + '&email=' + form[2].email.value + '&birthday=' + form[2].birthday.value + '&sex=' + form[2].sex.value + '&status=' + form[2].status.value,
     function(data) {
-      alert('oh yeah');
+      //alert('oh yeah');
     }
   )};
 
