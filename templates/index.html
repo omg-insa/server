@@ -277,39 +277,22 @@
     '/api/get_events/',
     'auth_token=' + auth_token + '&radius=5000&latitude=' + lat + '&longitude=' + lon,
     function(data) {
-      for (var i = 0; i < data.list.length; i++) {
-        var d1 = document.createElement('div'); d1.classList.add('accordion-group');
-        var d2 = document.createElement('div'); d2.classList.add('accordion-heading'); d2.classList.add('activeEvent'); d2.id = 'header' + i; d1.appendChild(d2); d2.textContent = data.list[i].name + ' (' + data.list[i].type + ')';
-        var d3 = document.createElement('div'); d3.classList.add('accordion-body'); d3.id = 'body' + i; d1.appendChild(d3);
-        var d4 = document.createElement('div'); d4.classList.add('accordion-inner'); d3.appendChild(d4);
-        var table = document.createElement('table'); table.classList.add('table'); d4.appendChild(table);
-        [['Place', 'address'], ['About', 'description']].forEach(function(s) {
-          if (!(data.list[i][s[1]])) return;
-          var tr = document.createElement('tr');
-          var th = document.createElement('th'); tr.appendChild(th); th.textContent = s[0];
-          var td = document.createElement('td'); tr.appendChild(td); td.textContent = data.list[i][s[1]];
-          table.appendChild(tr);
-        });
-        var id = '' + i;
-        d2.addEventListener('click', collapse.bind({}, id));
-        e.appendChild(d1);
-        var markerEvent = {
-          map: map,
-          draggable: false,
-          animation: google.maps.Animation.DROP,
-          position: new google.maps.LatLng(data.list[i].lat, data.list[i].lon),
-          title: data.list[i].name
-        };
-        //console.log(markerEvent);
-        new google.maps.Marker(markerEvent);
-        if (i > 0) collapse(i);
-      }
+      appendlist(e, data.list, '');
+      if (i > 0) collapse('', i);
+      new google.maps.Marker({
+        map: map,
+        draggable: false,
+        animation: google.maps.Animation.DROP,
+        position: new google.maps.LatLng(data.list[i].lat, data.list[i].lon),
+        title: data.list[i].name
+      });
     }
   ), post(
     '/api/get_personal_events/',
     'auth_token=' + auth_token,
     function(data) {
-      document.querySelector('#pevents').textContent = JSON.stringify(data, null, 2);
+      appendlist(document.querySelector('#pevents'), data.list, 'p');
+      if (i > 0) collapse('p', i);
     }
   ), post(
     '/api/get_full_user_info/',
@@ -371,6 +354,26 @@
   )};
 
 
+  function appendlist(element, list, prefix) {
+    for (var i = 0; i < list.length; i++) {
+      var d1 = document.createElement('div'); d1.classList.add('accordion-group');
+      var d2 = document.createElement('div'); d2.classList.add('accordion-heading'); d2.classList.add('activeEvent'); d2.id = prefix + 'header' + i; d1.appendChild(d2); d2.textContent = list[i].name + ' (' + list[i].type + ')';
+      var d3 = document.createElement('div'); d3.classList.add('accordion-body'); d3.id = prefix + 'body' + i; d1.appendChild(d3);
+      var d4 = document.createElement('div'); d4.classList.add('accordion-inner'); d3.appendChild(d4);
+      var table = document.createElement('table'); table.classList.add('table'); d4.appendChild(table);
+      [['Place', 'address'], ['About', 'description']].forEach(function(s) {
+        if (!(list[i][s[1]])) return;
+        var tr = document.createElement('tr');
+        var th = document.createElement('th'); tr.appendChild(th); th.textContent = s[0];
+        var td = document.createElement('td'); tr.appendChild(td); td.textContent = list[i][s[1]];
+        table.appendChild(tr);
+      });
+      var id = '' + i;
+      d2.addEventListener('click', collapse.bind({}, prefix, id));
+      element.appendChild(d1);
+    }
+  }
+
   function cookie() {
     document.cookie = 'auth_token=' + auth_token + '; expires=' + new Date(new Date().getTime() + 7*24*3600*1000).toGMTString() + '; path=/';
   };
@@ -419,13 +422,9 @@
     xhr.send(data);
   };
 
-  function collapse(i){
-    $("#body"+i).slideToggle("slow");
-    var header = $("#header"+i);
-    if(header.hasClass("activeEvent"))
-      header.removeClass("activeEvent");
-    else  
-      header.addClass("activeEvent");
+  function collapse(p, i){
+    $('#' + p + 'body' + i).slideToggle('slow');
+    $('#' + p + 'header' + i).toggleClass('activeEvent');
   };
 
 </script>
