@@ -5,20 +5,31 @@
 <style>
   html { height: 100%; }
   h1 { 
-    font-family: 'Handlee', cursive !important;
+    font-family: 'Share Tech Mono', sans-serif !important;
+    text-align: center;
    }
   ul{
     list-style-type: none;
   }
+  .clearer {
+    clear: both;
+    margin-bottom: 80px;
+  }
   #aboutForm {
     width: 100%;
+    margin: 0 2%;
   }
   .floatDiv {
     float: left;
     display: block;
-    width: 30%;
+    width: 45%;
     text-align: left;
-    margin: 5% 0 0 0;
+    margin: 0 3% 0 0;
+  }
+  #divLogo {
+    width: 100%;
+    margin: 50px auto;
+    left:-20%;
   }
   body 
   {
@@ -106,7 +117,7 @@
   #map-canvas { height: 400px; width: 100%; }
   #map-canvas img { max-width: inherit; }
 </style>
-<link href='http://fonts.googleapis.com/css?family=Handlee' rel='stylesheet' type='text/css'>
+<link href='http://fonts.googleapis.com/css?family=Share+Tech+Mono' rel='stylesheet' type='text/css'>
 <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/css/bootstrap-combined.min.css" rel="stylesheet">
 
 <!-- HaXx0r --> <br><br><br> <div align=center> <!-- /HaXx0r -->
@@ -225,13 +236,14 @@
         <li> Mickael Robert </li>
       </ul>
     </div>
-    <div id="divLogo" class="floatDiv">
-      <img src="logo_couverture.png" width="400px">
-    </div>
     <div id="divProject" class="floatDiv">
       <h1> Notre projet </h1>
       <p> Dans le cadre d’un cours d’option transversale, nous avons décidé de nous diriger vers un concept simple et universel : trouver et partager les événements à proximité de vous en temps réel. </p>
       <p> Pour cela nous avons développé une application mobile sous Android disponible sur Google Play ainsi que cette web application. Nous avons fait le choix de rendre payante notre application mobile pour raison technique. En effet, les requêtes de données transitent par Google App Engine, et n’ayant pas de compte professionnel, nous sommes exposés à une limite de connexions par jour. Le potentiel profit que l’on tirera de cette vente servira à financer une augmentation du nombre de connexions journalières. </p>
+    </div>
+    <div class="clearer"></div>
+    <div id="divLogo">
+      <img src="logo_couverture.png" width="600px">
     </div>
   </form>
 
