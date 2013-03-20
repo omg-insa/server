@@ -319,9 +319,12 @@
   };
 
   function initMap() {
+    var scale =  10;
+    var zoomLevel = Math.round((16 - Math.log(scale) / Math.log(2)) + 1);
+
 	var mapOptions = {
       center: new google.maps.LatLng(lat, lon),
-      zoom: 15,
+      zoom: zoomLevel,
       mapTypeControl: false,
       mapTypeId: google.maps.MapTypeId.ROADMAP
     };
