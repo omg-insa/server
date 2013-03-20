@@ -336,10 +336,12 @@
     xhr.open('POST', address, true);
     xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
     xhr.onreadystatechange = function() {
-      if(xhr.readyState === 4) {
-        if (xhr.status === 200) callback(JSON.parse(xhr.responseText));
-        if (xhr.status === 400) alert(JSON.parse(xhr.responseText).error);
-      }
+      if(xhr.readyState === 4) { switch (xhr.status) {
+        case 200: callback(JSON.parse(xhr.responseText)); break;
+        case 400: alert(JSON.parse(xhr.responseText).error); break;
+        case 403: logout(); break;
+        case 500: alert('The server is experiencing some sort of problem. Contact your system administrator.'); break;
+      }}
     };
     xhr.send(data);
   };
